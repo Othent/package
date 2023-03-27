@@ -1,8 +1,9 @@
 import axios from 'axios';
+import auth0 from 'auth0-js'
 
 
 // ping server
-export async function ping() {
+async function ping() {
     return axios({
       method: 'GET',
       url: 'https://server.othent.io/',
@@ -19,7 +20,7 @@ export async function ping() {
 
 
 // create user
-export async function createUser(JWT) {
+async function createUser(JWT) {
     return axios({
       method: 'POST',
       url: 'https://server.othent.io/create-user',
@@ -38,25 +39,82 @@ export async function createUser(JWT) {
 
 
 // log in
-export function logIn(string) {
-    return string === 'WDS'
+async function logIn() {
+    const auth0Client = new auth0.createAuth0Client({
+        "domain": "signo.us.auth0.com",
+        "clientId": "VjD2Y1xa8fV76z12EYiVzwuTaudLfrOZ"
+      });
+    const options = {
+        authorizationParams: {
+            redirect_uri: window.location.origin,
+        }
+    };
+    const user = await auth0Client.loginWithRedirect(options);
+    return user
 }
+
+
 
 // log out
-export function logOut(string) {
-    return string === 'WDS'
+async function logOut() {
+    const auth0Client = new auth0.createAuth0Client({
+        "domain": "signo.us.auth0.com",
+        "clientId": "VjD2Y1xa8fV76z12EYiVzwuTaudLfrOZ"
+      });
+    const log_out = await auth0Client.logout({
+        logoutParams: {
+            returnTo: window.location.origin
+        }
+    });
+    return log_out
 }
 
+
+
 // sign transaction
-export function signTransaction(string) {
-    return string === 'WDS'
+async function signTransaction(othentFunction, ) {
+
+    const auth0Client = new auth0.createAuth0Client({
+        "domain": "signo.us.auth0.com",
+        "clientId": "VjD2Y1xa8fV76z12EYiVzwuTaudLfrOZ"
+      });
+    
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+
+            // // create user for warp
+            // othentFunction: "initializeContract", 
+            // warpData: {function: 'initializeContract', data: null},
+
+            // send txn for warp
+            othentFunction: "broadcastTxn",
+            warpData: {
+            function: 'broadcastTxn', 
+            data: {
+                toContractId: 'XL_AtkccUxD45_Be76Qe_lSt8q9amgEO9OQnhIo-2xI',
+                toContractFunction: 'createPost',
+                txnData: {blog_post_1: 'Hello World!'}
+            }},
+
+            // arweave TXN JWT
+            // here
+        })
+    }
+};
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+    const idToken = accessToken.id_token;
+    return idToken
 }
 
 
 
 
 // send transaction
-export async function sendTransaction(JWT) {
+async function sendTransaction(JWT) {
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/send-transaction',
@@ -75,7 +133,7 @@ export async function sendTransaction(JWT) {
 
 
 // upload data to arweave
-export async function uploadData(file, fileName, fileType) {
+async function uploadData(file, fileName, fileType) {
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/upload-data',
@@ -95,7 +153,7 @@ export async function uploadData(file, fileName, fileType) {
 
 
 // query user address, GET
-export async function queryUser(unique_id) {
+async function queryUser(unique_id) {
     return axios({
         method: 'GET',
         url: 'https://server.othent.io/query-user',
@@ -115,7 +173,7 @@ export async function queryUser(unique_id) {
 
 
 // backup keyfile
-export async function backupKeyfile(PEM_public_key) {
+async function backupKeyfile(PEM_public_key) {
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/backup-keyfile',
@@ -130,3 +188,18 @@ export async function backupKeyfile(PEM_public_key) {
           throw error;
         });
 }
+
+
+
+module.exports = {
+    ping,
+    createUser,
+    logIn,
+    logOut,
+    signTransaction,
+    sendTransaction,
+    uploadData,
+    queryUser,
+    backupKeyfile
+  };
+
