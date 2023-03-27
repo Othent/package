@@ -1,0 +1,19 @@
+{
+  "name": "othent",
+  "version": "1.0.0",
+  "description": "Signing TXNs with Oauth",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Othent/package.git"
+  },
+  "author": "Lorimer Jenkins, Othent.io",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Othent/package/issues"
+  },
+  "homepage": "https://github.com/Othent/package#readme"
+}
