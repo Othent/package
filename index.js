@@ -41,8 +41,8 @@ async function createUser(JWT) {
 // log in
 async function logIn() {
     const auth0Client = new auth0.createAuth0Client({
-        "domain": "signo.us.auth0.com",
-        "clientId": "VjD2Y1xa8fV76z12EYiVzwuTaudLfrOZ"
+        "domain": "othent.us.auth0.com",
+        "clientId": "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
       });
     const options = {
         authorizationParams: {
@@ -58,8 +58,8 @@ async function logIn() {
 // log out
 async function logOut() {
     const auth0Client = new auth0.createAuth0Client({
-        "domain": "signo.us.auth0.com",
-        "clientId": "VjD2Y1xa8fV76z12EYiVzwuTaudLfrOZ"
+        "domain": "othent.us.auth0.com",
+        "clientId": "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
       });
     const log_out = await auth0Client.logout({
         logoutParams: {
@@ -71,12 +71,12 @@ async function logOut() {
 
 
 
-// sign transaction
+// sign transaction, sort this one out
 async function signTransaction(othentFunction, ) {
 
     const auth0Client = new auth0.createAuth0Client({
-        "domain": "signo.us.auth0.com",
-        "clientId": "VjD2Y1xa8fV76z12EYiVzwuTaudLfrOZ"
+        "domain": "othent.us.auth0.com",
+        "clientId": "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
       });
     
     const options = {
@@ -188,6 +188,9 @@ async function backupKeyfile(PEM_public_key) {
           throw error;
         });
 }
+
+
+
 
 
 
