@@ -1,5 +1,7 @@
 import axios from 'axios';
-import auth0 from 'auth0-js'
+import { createAuth0Client } from '@auth0/auth0-spa-js';
+
+// config all of this auth0 provider
 
 
 // ping server
@@ -9,7 +11,6 @@ async function ping() {
       url: 'https://server.othent.io/',
     })
     .then(response => {
-        console.log(response);
         return response.data;
     })
     .catch(error => {
@@ -40,33 +41,24 @@ async function createUser(JWT) {
 
 // log in
 async function logIn() {
-    const auth0Client = new auth0.createAuth0Client({
-        "domain": "othent.us.auth0.com",
-        "clientId": "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-      });
-    const options = {
-        authorizationParams: {
-            redirect_uri: window.location.origin,
-        }
-    };
-    const user = await auth0Client.loginWithRedirect(options);
-    return user
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+    await auth0Client.loginWithPopup();
+    return {'response': 'User logged in'}
 }
 
 
 
 // log out
 async function logOut() {
-    const auth0Client = new auth0.createAuth0Client({
-        "domain": "othent.us.auth0.com",
-        "clientId": "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-      });
-    const log_out = await auth0Client.logout({
-        logoutParams: {
-            returnTo: window.location.origin
-        }
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
-    return log_out
+    await auth0Client.logout();
+    return {'response': 'User logged out'}
 }
 
 
@@ -74,9 +66,9 @@ async function logOut() {
 // sign transaction, sort this one out
 async function signTransaction(othentFunction, ) {
 
-    const auth0Client = new auth0.createAuth0Client({
-        "domain": "othent.us.auth0.com",
-        "clientId": "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
       });
     
     const options = {
@@ -194,15 +186,4 @@ async function backupKeyfile(PEM_public_key) {
 
 
 
-module.exports = {
-    ping,
-    createUser,
-    logIn,
-    logOut,
-    signTransaction,
-    sendTransaction,
-    uploadData,
-    queryUser,
-    backupKeyfile
-  };
-
+export default { ping, createUser, logIn, logOut, signTransaction, sendTransaction, uploadData, queryUser, backupKeyfile };
