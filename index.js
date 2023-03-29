@@ -41,9 +41,8 @@ async function createUser() {
         detailedResponse: true
     });
     const JWT = accessToken.id_token;
-    console.log(JWT)
 
-    await axios({
+    return axios({
         method: 'POST',
         url: 'https://server.othent.io/create-user',
         data: { JWT }
@@ -164,7 +163,7 @@ async function uploadData(file, fileName, fileType) {
 // query user address, GET
 async function queryUser(unique_id) {
     return axios({
-        method: 'GET',
+        method: 'POST',
         url: 'https://server.othent.io/query-user',
         data: { unique_id }
       })
@@ -202,11 +201,9 @@ async function initializeJWK(JWK_public_key) {
     });
     const PEM_key_JWT = accessToken.id_token;
 
-    console.log(PEM_key_JWT)
-
     return axios({
         method: 'POST',
-        url: 'https://server.othent.io/backup-keyfile',
+        url: 'https://server.othent.io/initialize-JWK',
         data: { PEM_key_JWT }
       })
       .then(response => {
