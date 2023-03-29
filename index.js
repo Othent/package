@@ -41,6 +41,7 @@ async function createUser() {
         detailedResponse: true
     });
     const JWT = accessToken.id_token;
+    console.log(JWT)
 
     await axios({
         method: 'POST',
@@ -86,25 +87,27 @@ async function logOut() {
 
 
 // sign transaction
-async function signTransaction(toContractId, toContractFunction, txnData) {
+async function signTransaction(othentFunction, toContractId, toContractFunction, txnData) {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
-    
+
+    const warpData = {
+        function: othentFunction, 
+        data: {
+            toContractId: toContractId,
+            toContractFunction: toContractFunction,
+            txnData: txnData
+        }
+    }
+
     const options = {
         authorizationParams: {
             transaction_input: JSON.stringify({
-                othentFunction: "broadcastTxn",
-                warpData: {
-                    function: 'broadcastTxn', 
-                    data: {
-                        toContractId: toContractId,
-                        toContractFunction: toContractFunction,
-                        txnData: txnData
-                    }
-                },
+                othentFunction: othentFunction,
+                warpData: warpData,
             })
         }
     };
@@ -178,11 +181,33 @@ async function queryUser(unique_id) {
 
 
 // backup keyfile
-async function backupKeyfile(signedPEMkey) {
+async function initializeJWK(JWK_public_key) {
+
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: 'initializeJWK',
+                warpData: { function: 'initializeJWK', data: { JWK_public_key } },
+            })
+        }
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+    const PEM_key_JWT = accessToken.id_token;
+
+    console.log(PEM_key_JWT)
+
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/backup-keyfile',
-        data: { signedPEMkey }
+        data: { PEM_key_JWT }
       })
       .then(response => {
         return response.data;
@@ -198,4 +223,4 @@ async function backupKeyfile(signedPEMkey) {
 
 
 
-export default { ping, createUser, logIn, logOut, signTransaction, sendTransaction, uploadData, queryUser, backupKeyfile };
+export default { ping, createUser, logIn, logOut, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK };
