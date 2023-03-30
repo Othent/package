@@ -74,7 +74,7 @@ async function logIn() {
             }
         };
         await auth0Client.loginWithPopup(options);
-        return {'response': 'User logged in'}
+        return {'response': 'user logged in'}
     }
 }
 
@@ -87,7 +87,20 @@ async function logOut() {
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
     await auth0Client.logout();
-    return {'response': 'User logged out'}
+    return {'response': 'user logged out'}
+}
+
+
+
+
+// user details
+async function userDetails() {
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+    const details = auth0Client.getUser()
+    return details
 }
 
 
@@ -249,4 +262,4 @@ async function initializeJWK(JWK_public_key) {
 
 
 
-export default { ping, createUser, logIn, logOut, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK };
+export default { ping, createUser, logIn, logOut, userDetails, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK };
