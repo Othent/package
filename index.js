@@ -117,6 +117,42 @@ async function userDetails() {
 
 
 
+// read contract
+async function readContract() {
+
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: "idToken", 
+            })
+        }
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+    const JWT = accessToken.id_token;
+
+    return axios({
+        method: 'POST',
+        url: 'https://server.othent.io/read-contract',
+        data: { JWT }
+      })
+      .then(response => {
+        return response.data;
+    })
+    .catch(error => {
+        console.log(error.response.data);
+        throw error;
+    });
+}
+
+
+
 
 
 // sign transaction
@@ -273,4 +309,4 @@ async function initializeJWK(JWK_public_key) {
 
 
 
-export default { ping, createUser, logIn, logOut, userDetails, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK };
+export default { ping, createUser, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK };
