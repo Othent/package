@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 
-// config all of this auth0 provider
-
 
 // ping server
 async function ping() {
@@ -64,8 +62,20 @@ async function logIn() {
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
-    await auth0Client.loginWithPopup();
-    return {'response': 'User logged in'}
+    const isAuthenticated = await auth0Client.isAuthenticated(); 
+    if (isAuthenticated) {
+        return {'response': 'User is already logged in'}
+    } else if (isAuthenticated === false) {
+        const options = {
+            authorizationParams: {
+                transaction_input: JSON.stringify({
+                    othentFunction: "idToken", 
+                })
+            }
+        };
+        await auth0Client.loginWithPopup(options);
+        return {'response': 'User logged in'}
+    }
 }
 
 
@@ -161,11 +171,30 @@ async function uploadData(file, fileName, fileType) {
 
 
 // query user address, GET
-async function queryUser(unique_id) {
+async function queryUser() {
+
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: "idToken", 
+            })
+        }
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+    const JWT = accessToken.id_token;
+
+
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/query-user',
-        data: { unique_id }
+        data: { JWT }
       })
       .then(response => {
         return response.data;
