@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
-
+import jwt_decode from 'jwt-decode';
 
 // ping server
 async function ping() {
@@ -99,8 +99,19 @@ async function userDetails() {
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
-    const details = auth0Client.getUser()
-    return details
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: "idToken", 
+            })
+        }
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+    const decoded_JWT = jwt_decode(accessToken.id_token)
+    return decoded_JWT
 }
 
 
