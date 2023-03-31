@@ -327,7 +327,25 @@ async function initializeJWK(JWK_public_key) {
 
 
 
+// JWK backup transaction
+async function JWKBackupTxn(JWT) {
+    return axios({
+        method: 'POST',
+        url: 'https://server.othent.io/JWK-backup-transaction',
+        data: { JWT }
+      })
+      .then(response => {
+        return response.data;
+    })
+    .catch(error => {
+        console.log(error.response.data);
+        throw error;
+    });
+}
 
 
 
-export default { ping, createUser, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK };
+
+
+
+export default { ping, createUser, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK, JWKBackupTxn };
