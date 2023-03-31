@@ -2,6 +2,7 @@ import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 
+
 // ping server
 async function ping() {
     return axios({
@@ -126,7 +127,16 @@ async function userDetails() {
     const accessToken = await auth0Client.getTokenSilently({
         detailedResponse: true
     });
-    const decoded_JWT = jwt_decode(accessToken.id_token)
+    let decoded_JWT = jwt_decode(accessToken.id_token)
+    delete decoded_JWT.nonce
+    delete decoded_JWT.sid
+    delete decoded_JWT.aud
+    delete decoded_JWT.iss
+    delete decoded_JWT.iat
+    delete decoded_JWT.exp
+    delete decoded_JWT.updated_at
+
+    console.log(decoded_JWT)
     return decoded_JWT
 }
 
@@ -290,7 +300,7 @@ async function queryUser() {
 
 
 // backup keyfile
-async function initializeJWK(JWK_public_key) {
+async function initializeJWK(JWK_public_key_PEM) {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -301,7 +311,7 @@ async function initializeJWK(JWK_public_key) {
         authorizationParams: {
             transaction_input: JSON.stringify({
                 othentFunction: 'initializeJWK',
-                warpData: { function: 'initializeJWK', data: { JWK_public_key } },
+                warpData: { function: 'initializeJWK', data: { JWK_public_key: JWK_public_key_PEM } },
             })
         }
     };
