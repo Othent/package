@@ -58,10 +58,12 @@ async function createUser() {
 
 // log in
 async function logIn() {
+
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
+
     const isAuthenticated = await auth0Client.isAuthenticated(); 
     if (isAuthenticated) {
         return {'response': 'User is already logged in'}
@@ -74,8 +76,22 @@ async function logIn() {
             }
         };
         await auth0Client.loginWithPopup(options);
-        return {'response': 'user logged in'}
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true
+        });
+        const JWT = accessToken.id_token;
+
+        const checkDB = await axios({
+            method: 'POST',
+            url: 'https://server.othent.io/query-user',
+            data: { JWT }
+        })
+        const checkDB_res = checkDB.data
+
+        return checkDB_res
+
     }
+
 }
 
 
@@ -211,20 +227,25 @@ async function sendTransaction(JWT) {
 
 
 
-// upload data to arweave
-async function uploadData(file, fileName, fileType) {
-    return axios({
-        method: 'POST',
-        url: 'https://server.othent.io/upload-data',
-        data: { file, fileName, fileType }
-      })
-      .then(response => {
-        return response.data;
+// upload file to arweave
+async function uploadData(file) {
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return await fetch('https://server.othent.io/upload-data', {
+      method: 'POST',
+      body: formData,
     })
-    .catch(error => {
+      .then((response) => response.json())
+      .then((data) => {
+        return data
+      })
+      .catch(error => {
         console.log(error.response.data);
         throw error;
     });
+
 }
 
 
