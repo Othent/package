@@ -135,8 +135,6 @@ async function userDetails() {
     delete decoded_JWT.iat
     delete decoded_JWT.exp
     delete decoded_JWT.updated_at
-
-    console.log(decoded_JWT)
     return decoded_JWT
 }
 
