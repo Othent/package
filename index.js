@@ -3,6 +3,8 @@ import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 
 
+
+
 // ping server
 async function ping() {
     return axios({
@@ -17,6 +19,8 @@ async function ping() {
         throw error;
     });
 }
+
+  
 
 
 // create user
