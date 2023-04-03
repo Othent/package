@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
-
+import { sha256 } from 'crypto-hash';
 
 
 
@@ -224,8 +224,33 @@ async function sendTransaction(JWT) {
 // upload file to arweave
 async function uploadData(file) {
 
+
+    const file_hash = 'file';
+
+    console.log(file_hash)
+
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: 'uploadData',
+                file_hash: file_hash,
+            })
+        }
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+    const fileHashJWT = accessToken.id_token;
+
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("fileHashJWT", fileHashJWT)
 
     return await fetch('https://server.othent.io/upload-data', {
       method: 'POST',
