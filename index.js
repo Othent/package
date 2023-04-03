@@ -20,44 +20,7 @@ async function ping() {
     });
 }
 
-  
 
-
-// create user
-async function createUser() {
-
-    const auth0Client = await createAuth0Client({
-        domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-    });
-    
-    const options = {
-        authorizationParams: {
-            transaction_input: JSON.stringify({
-                othentFunction: "initializeContract", 
-                warpData: {function: 'initializeContract', data: null}
-            })
-        }
-    };
-    await auth0Client.loginWithPopup(options);
-    const accessToken = await auth0Client.getTokenSilently({
-        detailedResponse: true
-    });
-    const JWT = accessToken.id_token;
-
-    return axios({
-        method: 'POST',
-        url: 'https://server.othent.io/create-user',
-        data: { JWT }
-    })
-    .then(response => {
-        return response.data;
-    })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
-}
 
 
 
@@ -85,15 +48,34 @@ async function logIn() {
             detailedResponse: true
         });
         const JWT = accessToken.id_token;
+        let decoded_JWT = jwt_decode(JWT)
 
-        const checkDB = await axios({
-            method: 'POST',
-            url: 'https://server.othent.io/query-user',
-            data: { JWT }
-        })
-        const checkDB_res = checkDB.data
+        if (decoded_JWT.contract_id) {
 
-        return checkDB_res
+            delete decoded_JWT.nonce
+            delete decoded_JWT.sid
+            delete decoded_JWT.aud
+            delete decoded_JWT.iss
+            delete decoded_JWT.iat
+            delete decoded_JWT.exp
+            delete decoded_JWT.updated_at
+            return decoded_JWT
+            
+        } else {
+
+            return axios({
+                method: 'POST',
+                url: 'https://server.othent.io/create-user',
+                data: { JWT }
+            })
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                throw error;
+            });
+        }
 
     }
 
@@ -322,4 +304,4 @@ async function JWKBackupTxn(JWT) {
 
 
 
-export default { ping, createUser, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
+export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
