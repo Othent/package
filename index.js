@@ -263,44 +263,6 @@ async function uploadData(file) {
 
 
 
-// query user address, GET
-async function queryUser() {
-
-    const auth0Client = await createAuth0Client({
-        domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-    });
-    const options = {
-        authorizationParams: {
-            transaction_input: JSON.stringify({
-                othentFunction: "idToken", 
-            })
-        }
-    };
-    await auth0Client.loginWithPopup(options);
-    const accessToken = await auth0Client.getTokenSilently({
-        detailedResponse: true
-    });
-    const JWT = accessToken.id_token;
-
-
-    return axios({
-        method: 'POST',
-        url: 'https://server.othent.io/query-user',
-        data: { JWT }
-      })
-      .then(response => {
-        return response.data;
-    })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
-}
-
-
-
-
 // backup keyfile
 async function initializeJWK(JWK_public_key_PEM) {
 
@@ -360,4 +322,4 @@ async function JWKBackupTxn(JWT) {
 
 
 
-export default { ping, createUser, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, queryUser, initializeJWK, JWKBackupTxn };
+export default { ping, createUser, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
