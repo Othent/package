@@ -4,6 +4,17 @@ import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 
 
+// The "continue with othent" button should call the "logIn()" function below and have our logo and also the words in too (example at weavetransfer.com)
+function OthentButton() {
+
+  return (
+  
+  <button>Continue with Othent</button>
+
+  );
+}
+
+
 
 // ping server
 async function ping() {
@@ -219,13 +230,25 @@ async function sendTransaction(JWT) {
     });
 }
 
+const getSHA256Hash = async (buffer) => {
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hash = hashArray
+      .map((item) => item.toString(16).padStart(2, "0"))
+      .join("");
+    return hash;
+  };
+  
 
 
 // upload file to arweave
 async function uploadData(file) {
 
+    const fileBuffer =  new Uint8Array((await file.arrayBuffer()));
 
-    const file_hash = 'file';
+    console.log(fileBuffer)
+
+    const file_hash = await getSHA256Hash(fileBuffer)
 
     console.log(file_hash)
 
@@ -329,4 +352,5 @@ async function JWKBackupTxn(JWT) {
 
 
 
-export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
+export default { OthentButton, ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
+
