@@ -1,7 +1,7 @@
 {
   "name": "othent",
   "version": "1.0.0",
-  "description": "Signing TXNs with Oauth",
+  "description": "Merging Web2 to Web3 user logins with a familiar and simple interface",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
