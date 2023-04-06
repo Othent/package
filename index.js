@@ -5,8 +5,6 @@ import { sha256 } from 'crypto-hash';
 
 
 
-
-
 // ping server
 async function ping() {
     return axios({
@@ -227,18 +225,10 @@ async function sendTransaction(JWT) {
 
 // upload file to arweave
 async function uploadData(file) {
-    
-    const getSHA256Hash = async (buffer) => {
-    const hashBuffer = await window.crypto.subtle.digest("SHA-256", buffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hash = hashArray
-      .map((item) => item.toString(16).padStart(2, "0"))
-      .join("");
-    return hash};
 
     const fileBuffer =  new Uint8Array((await file.arrayBuffer()));
 
-    const file_hash = await getSHA256Hash(fileBuffer)
+    const file_hash = await sha256(fileBuffer)
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
