@@ -1,8 +1,9 @@
 {
   "name": "othent",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "description": "Merging Web2 to Web3 user logins with a familiar and simple interface",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
