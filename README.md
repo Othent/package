@@ -26,11 +26,9 @@ userDetails(): Retrieve the details of the current user.
 
 readContract(): Read data from the current user's contract.
 
-signTransaction(othentFunction, toContractId, toContractFunction, txnData): Sign a transaction with the current user's account.
+signTransaction({ method, data, tags }): Sign a transaction with the current user's account.
 
-sendTransaction(JWT): Send a signed transaction to Othent.
-
-uploadData(file): Upload a file to Arweave and create a Othent users files hash.
+sendTransaction(signedTransaction): Send a signed transaction to Othent.
 
 initializeJWK(JWK_public_key_PEM): backup a Othent account with a JWK public key.
 
@@ -52,13 +50,44 @@ async function logIn() {
 }
 ```
 
-Upload a file to Arweave and create a Othent hash
+Send a Warp transaction
 
-```javascript
-async function uploadFile(file) {
+``` javascript
+async function warpTransaction() {
   try {
-    const uploadResult = await othent.uploadData(file);
-    console.log(uploadResult);
+    const signedTransaction = await othent.signTransaction({
+      method: 'warp', 
+      data: { 
+        othentFunction: 'sendTransaction', 
+        toContractId: 'XL_AtkccUxD45_Be76Qe_lSt8q9amgEO9OQnhIo-2xI', 
+        toContractFunction: 'createPost', 
+        txnData: { blog_entry_18: 'Hello World!'} 
+      }, 
+      tags: [ {name: 'Test': value: 'Tag'} ]
+    });
+    const sendTransaction = await othent.sendTransaction(signedTransaction);
+    console.log(sendTransaction);
+  } catch (error) {
+    console.error(error);
+  }
+}
+```
+
+Send a Arweave transaction
+
+``` javascript
+async function arweaveTransaction(file) {
+  try {
+    const signedTransaction = await othent.signTransaction({
+      method: 'arweave', 
+      data: { 
+        othentFunction: 'uploadData', 
+        file: file
+      }, 
+      tags: [ {name: 'Test': value: 'Tag'} ]
+    });
+    const sendTransaction = await othent.sendTransaction(signedTransaction);
+    console.log(sendTransaction);
   } catch (error) {
     console.error(error);
   }

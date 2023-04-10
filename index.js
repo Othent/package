@@ -166,36 +166,65 @@ async function readContract() {
 
 
 // sign transaction
-async function signTransaction(othentFunction, toContractId, toContractFunction, txnData) {
+async function signTransaction({ method, data, tags }) {
+
+    tags ??= []
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
 
-    const warpData = {
-        function: othentFunction, 
-        data: {
-            toContractId: toContractId,
-            toContractFunction: toContractFunction,
-            txnData: txnData
+    if (method === 'warp') {
+        const othentFunction = data.othentFunction
+        const toContractId = data.toContractId
+        const toContractFunction = data.toContractFunction
+        const txnData = data.txnData
+        const warpData = {
+            function: othentFunction, 
+            data: {
+                toContractId: toContractId,
+                toContractFunction: toContractFunction,
+                txnData: txnData
+            }
         }
+    
+        const options = {
+            authorizationParams: {
+                transaction_input: JSON.stringify({
+                    othentFunction: othentFunction,
+                    warpData: warpData,
+                    tags: tags
+                })
+            }
+        };
+        await auth0Client.loginWithPopup(options);
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true
+        });
+        return {JWT: accessToken.id_token, method: 'warp'}
     }
+    if (method === 'arweave') {
+        const file = data.file
+        const fileBuffer =  new Uint8Array((await file.arrayBuffer()));
+        const file_hash = await sha256(fileBuffer)
+        const options = {
+            authorizationParams: {
+                transaction_input: JSON.stringify({
+                    othentFunction: 'uploadData',
+                    file_hash: file_hash,
+                    tags: tags
+                })
+            }
+        };
+        await auth0Client.loginWithPopup(options);
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true
+        });
+        return { file: file, JWT: accessToken.id_token, method: 'arweave' };
+    }
+    else { return {'response': 'no method detected'} }
 
-    const options = {
-        authorizationParams: {
-            transaction_input: JSON.stringify({
-                othentFunction: othentFunction,
-                warpData: warpData,
-            })
-        }
-    };
-    await auth0Client.loginWithPopup(options);
-    const accessToken = await auth0Client.getTokenSilently({
-        detailedResponse: true
-    });
-    const idToken = accessToken.id_token;
-    return idToken
 }
 
 
@@ -204,70 +233,49 @@ async function signTransaction(othentFunction, toContractId, toContractFunction,
 
 
 // send transaction
-async function sendTransaction(JWT) {
-    return axios({
+async function sendTransaction({ data }) {
+
+    if (data.method === 'warp') {
+        const JWT = data.JWT
+        return axios({
+            method: 'POST',
+            url: 'https://server.othent.io/send-transaction',
+            data: { JWT }
+          })
+          .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
+
+    } 
+    if (data.method === 'arweave') {
+
+        const file = data.file
+        const fileHashJWT = data.JWT
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("fileHashJWT", fileHashJWT)
+
+        return await fetch('https://server.othent.io/upload-data', {
         method: 'POST',
-        url: 'https://server.othent.io/send-transaction',
-        data: { JWT }
-      })
-      .then(response => {
-        return response.data;
-    })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
+        body: formData,
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            return data
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
+    } 
+    else { return {'response': 'no method detected'} }
+    
 }
-
-
-  
-
-
-// upload file to arweave
-async function uploadData(file) {
-
-    const fileBuffer =  new Uint8Array((await file.arrayBuffer()));
-
-    const file_hash = await sha256(fileBuffer)
-
-    const auth0Client = await createAuth0Client({
-        domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-    });
-
-    const options = {
-        authorizationParams: {
-            transaction_input: JSON.stringify({
-                othentFunction: 'uploadData',
-                file_hash: file_hash,
-            })
-        }
-    };
-    await auth0Client.loginWithPopup(options);
-    const accessToken = await auth0Client.getTokenSilently({
-        detailedResponse: true
-    });
-    const fileHashJWT = accessToken.id_token;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("fileHashJWT", fileHashJWT)
-
-    return await fetch('https://server.othent.io/upload-data', {
-      method: 'POST',
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return data
-      })
-      .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
-
-}
-
 
 
 
@@ -330,5 +338,5 @@ async function JWKBackupTxn(JWT) {
 
 
 
-export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
+export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, initializeJWK, JWKBackupTxn };
 
