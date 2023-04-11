@@ -35,64 +35,7 @@ initializeJWK(JWK_public_key_PEM): backup a Othent account with a JWK public key
 JWKBackupTxn(JWT): Send a transaction with the specified JWK.
 
 ## Examples
-#### Here are some examples of using the Othent Library:
-
-Log in a user and retrieve their contract details
-
-``` javascript
-async function logIn() {
-  try {
-    const userDetails = await othent.logIn();
-    console.log(userDetails);
-  } catch (error) {
-    console.error(error);
-  }
-}
-```
-
-Send a Warp transaction
-
-``` javascript
-async function warpTransaction() {
-  try {
-    const signedTransaction = await othent.signTransaction({
-      method: 'warp', 
-      data: { 
-        othentFunction: 'sendTransaction', 
-        toContractId: 'XL_AtkccUxD45_Be76Qe_lSt8q9amgEO9OQnhIo-2xI', 
-        toContractFunction: 'createPost', 
-        txnData: { blog_entry_18: 'Hello World!'} 
-      }, 
-      tags: [ {name: 'Test': value: 'Tag'} ]
-    });
-    const sendTransaction = await othent.sendTransaction(signedTransaction);
-    console.log(sendTransaction);
-  } catch (error) {
-    console.error(error);
-  }
-}
-```
-
-Send a Arweave transaction
-
-``` javascript
-async function arweaveTransaction(file) {
-  try {
-    const signedTransaction = await othent.signTransaction({
-      method: 'arweave', 
-      data: { 
-        othentFunction: 'uploadData', 
-        file: file
-      }, 
-      tags: [ {name: 'Test': value: 'Tag'} ]
-    });
-    const sendTransaction = await othent.sendTransaction(signedTransaction);
-    console.log(sendTransaction);
-  } catch (error) {
-    console.error(error);
-  }
-}
-```
+#### Please find examples at https://docs.othent.io/developers/sdk
 
 ## Documentation
 For more information on how to use the Othent Library, please see the official Othent documentation at https://docs.othent.io.
