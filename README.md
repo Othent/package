@@ -32,13 +32,13 @@ sendTransaction(signedTransaction): Send a signed transaction to Othent.
 
 initializeJWK(JWK_public_key_PEM): backup a Othent account with a JWK public key.
 
-JWKBackupTxn(JWT): Send a transaction with the specified JWK.
+JWKBackupTxn(signedJWTByJWK): Send a transaction with the specified JWK.
 
 ## Examples
 #### Please find examples at https://docs.othent.io/developers/sdk
 
 ## Documentation
-For more information on how to use the Othent Library, please see the official Othent documentation at https://docs.othent.io.
+For more information on how to use the Othent Library, please see the official Othent documentation at https://docs.othent.io/developers/sdk.
 
 ## Contact
 If you have any questions or issues with the Othent Library, please contact us at hello@othent.io or open an issue in the GitHub repository.
