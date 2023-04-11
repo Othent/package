@@ -233,7 +233,9 @@ async function signTransaction({ method, data, tags }) {
 
 
 // send transaction
-async function sendTransaction({ data }) {
+async function sendTransaction(data) {
+
+    console.log(data)
 
     if (data.method === 'warp') {
         const JWT = data.JWT
