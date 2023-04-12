@@ -251,7 +251,7 @@ async function sendTransaction(signedTransaction) {
         });
 
     } 
-    if (signedTransaction.method === 'arweave') {
+    else if (signedTransaction.method === 'arweave') {
 
         const file = signedTransaction.file
         const fileHashJWT = signedTransaction.JWT
@@ -275,6 +275,7 @@ async function sendTransaction(signedTransaction) {
     else { return {'response': 'no method detected', 'signedTransaction': signedTransaction} }
     
 }
+
 
 
 
