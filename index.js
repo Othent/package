@@ -233,11 +233,9 @@ async function signTransaction({ method, data, tags }) {
 
 
 // send transaction
-async function sendTransaction(data) {
+async function sendTransaction(signedTransaction) {
 
-    console.log(data)
-
-    if (data.method === 'warp') {
+    if (signedTransaction.method === 'warp') {
         const JWT = data.JWT
         return axios({
             method: 'POST',
@@ -253,7 +251,7 @@ async function sendTransaction(data) {
         });
 
     } 
-    if (data.method === 'arweave') {
+    if (signedTransaction.method === 'arweave') {
 
         const file = data.file
         const fileHashJWT = data.JWT
@@ -275,7 +273,7 @@ async function sendTransaction(data) {
             throw error;
         });
     } 
-    else { return {'response': 'no method detected'} }
+    else { return {'response': 'no method detected', 'signedTransaction': signedTransaction} }
     
 }
 
