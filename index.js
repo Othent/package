@@ -236,7 +236,7 @@ async function signTransaction({ method, data, tags }) {
 async function sendTransaction(signedTransaction) {
 
     if (signedTransaction.method === 'warp') {
-        const JWT = data.JWT
+        const JWT = signedTransaction.JWT
         return axios({
             method: 'POST',
             url: 'https://server.othent.io/send-transaction',
@@ -253,20 +253,19 @@ async function sendTransaction(signedTransaction) {
     } 
     if (signedTransaction.method === 'arweave') {
 
-        const file = data.file
-        const fileHashJWT = data.JWT
+        const file = signedTransaction.file
+        const fileHashJWT = signedTransaction.JWT
 
         const formData = new FormData();
         formData.append("file", file);
         formData.append("fileHashJWT", fileHashJWT)
 
-        return await fetch('https://server.othent.io/upload-data', {
-        method: 'POST',
-        body: formData,
+        return axios('https://server.othent.io/upload-data', {
+            method: 'POST',
+            data: formData
         })
-        .then((response) => response.json())
-        .then((data) => {
-            return data
+        .then(response => {
+            return response.data;
         })
         .catch(error => {
             console.log(error.response.data);
