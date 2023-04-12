@@ -89,7 +89,9 @@ async function logOut() {
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
-    await auth0Client.logout();
+    await auth0Client.logout({
+        returnTo: window.location.origin
+      });
     return {'response': 'user logged out'}
 }
 
