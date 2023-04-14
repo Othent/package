@@ -270,7 +270,7 @@ async function sendTransaction(signedTransaction) {
         formData.append("file", file);
         formData.append("fileHashJWT", fileHashJWT)
 
-        const upload_data_req = await fetch('https://server.othent.io/upload-data', {
+        return await fetch('https://server.othent.io/upload-data', {
             method: 'POST',
             body: formData
         })
@@ -286,7 +286,7 @@ async function sendTransaction(signedTransaction) {
             throw error;
         });
 
-        return upload_data_req
+
 
     } 
     else { return {'response': 'no method detected', 'signedTransaction': signedTransaction} }
