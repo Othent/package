@@ -7,7 +7,7 @@ import { sha256 } from 'crypto-hash';
 
 // ping server
 async function ping() {
-    await axios({
+    return await axios({
       method: 'GET',
       url: 'https://server.othent.io/',
     })
@@ -65,7 +65,7 @@ async function logIn() {
             
         } else {
 
-            await axios({
+            return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/create-user',
                 data: { JWT }
@@ -156,7 +156,7 @@ async function readContract() {
     });
     const JWT = accessToken.id_token;
 
-    await axios({
+    return await axios({
         method: 'POST',
         url: 'https://server.othent.io/read-contract',
         data: { JWT }
@@ -247,7 +247,7 @@ async function sendTransaction(signedTransaction) {
 
     if (signedTransaction.method === 'warp') {
         const JWT = signedTransaction.JWT
-        await axios({
+        return await axios({
             method: 'POST',
             url: 'https://server.othent.io/send-transaction',
             data: { JWT }
@@ -278,15 +278,12 @@ async function sendTransaction(signedTransaction) {
             return response.json();
         })
         .then(data => {
-            console.log(data);
             return data;
         })
         .catch(error => {
             console.log(error);
             throw error;
         });
-
-
 
     } 
     else { return {'response': 'no method detected', 'signedTransaction': signedTransaction} }
@@ -319,7 +316,7 @@ async function initializeJWK(JWK_public_key_PEM) {
     });
     const PEM_key_JWT = accessToken.id_token;
 
-    await axios({
+    return await axios({
         method: 'POST',
         url: 'https://server.othent.io/initialize-JWK',
         data: { PEM_key_JWT }
@@ -337,7 +334,7 @@ async function initializeJWK(JWK_public_key_PEM) {
 
 // JWK backup transaction
 async function JWKBackupTxn(JWT) {
-    await axios({
+    return await axios({
         method: 'POST',
         url: 'https://server.othent.io/JWK-backup-transaction',
         data: { JWT }
