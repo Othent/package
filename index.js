@@ -4,6 +4,20 @@ import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 
 
+<<<<<<< Updated upstream
+=======
+// // The "continue with othent" button should call the "logIn()" function below and have our logo and also the words in too (example at weavetransfer.com)
+// function OthentButton() {
+
+//   return (
+  
+//   <button>Continue with Othent</button>
+
+//   );
+// }
+
+
+>>>>>>> Stashed changes
 
 // ping server
 async function ping() {
@@ -353,5 +367,9 @@ async function JWKBackupTxn(JWT) {
 
 
 
+<<<<<<< Updated upstream
 export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, initializeJWK, JWKBackupTxn };
+=======
+export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
+>>>>>>> Stashed changes
 
