@@ -7,7 +7,7 @@ import { sha256 } from 'crypto-hash';
 
 // ping server
 async function ping() {
-    return axios({
+    await axios({
       method: 'GET',
       url: 'https://server.othent.io/',
     })
@@ -65,7 +65,7 @@ async function logIn() {
             
         } else {
 
-            return axios({
+            await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/create-user',
                 data: { JWT }
@@ -156,7 +156,7 @@ async function readContract() {
     });
     const JWT = accessToken.id_token;
 
-    return axios({
+    await axios({
         method: 'POST',
         url: 'https://server.othent.io/read-contract',
         data: { JWT }
@@ -247,7 +247,7 @@ async function sendTransaction(signedTransaction) {
 
     if (signedTransaction.method === 'warp') {
         const JWT = signedTransaction.JWT
-        return axios({
+        await axios({
             method: 'POST',
             url: 'https://server.othent.io/send-transaction',
             data: { JWT }
@@ -270,17 +270,24 @@ async function sendTransaction(signedTransaction) {
         formData.append("file", file);
         formData.append("fileHashJWT", fileHashJWT)
 
-        return axios('https://server.othent.io/upload-data', {
+        const upload_data_req = await fetch('https://server.othent.io/upload-data', {
             method: 'POST',
-            data: formData
+            body: formData
         })
         .then(response => {
-            return response.data;
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            return data;
         })
         .catch(error => {
-            console.log(error.response.data);
+            console.log(error);
             throw error;
         });
+
+        return upload_data_req
+
     } 
     else { return {'response': 'no method detected', 'signedTransaction': signedTransaction} }
     
@@ -312,7 +319,7 @@ async function initializeJWK(JWK_public_key_PEM) {
     });
     const PEM_key_JWT = accessToken.id_token;
 
-    return axios({
+    await axios({
         method: 'POST',
         url: 'https://server.othent.io/initialize-JWK',
         data: { PEM_key_JWT }
@@ -330,7 +337,7 @@ async function initializeJWK(JWK_public_key_PEM) {
 
 // JWK backup transaction
 async function JWKBackupTxn(JWT) {
-    return axios({
+    await axios({
         method: 'POST',
         url: 'https://server.othent.io/JWK-backup-transaction',
         data: { JWT }
