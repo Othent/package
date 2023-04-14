@@ -29,7 +29,8 @@ async function logIn() {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        redirect_uri: window.location.origin
     });
 
     const isAuthenticated = await auth0Client.isAuthenticated(); 
@@ -40,7 +41,8 @@ async function logIn() {
             authorizationParams: {
                 transaction_input: JSON.stringify({
                     othentFunction: "idToken", 
-                })
+                }),
+                redirect_uri: window.location.origin
             }
         };
         await auth0Client.loginWithPopup(options);
@@ -87,10 +89,13 @@ async function logIn() {
 async function logOut() {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        redirect_uri: window.location.origin
     });
     await auth0Client.logout({
-        returnTo: window.location.origin
+        logoutParams: {
+            returnTo: window.location.origin
+          }
       });
     return {'response': 'user logged out'}
 }
@@ -102,7 +107,8 @@ async function logOut() {
 async function userDetails() {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        redirect_uri: window.location.origin
     });
     const options = {
         authorizationParams: {
@@ -134,7 +140,8 @@ async function readContract() {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        redirect_uri: window.location.origin
     });
     const options = {
         authorizationParams: {
@@ -174,7 +181,8 @@ async function signTransaction({ method, data, tags }) {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        redirect_uri: window.location.origin
     });
 
     if (method === 'warp') {
@@ -286,7 +294,8 @@ async function initializeJWK(JWK_public_key_PEM) {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        redirect_uri: window.location.origin
     });
 
     const options = {
