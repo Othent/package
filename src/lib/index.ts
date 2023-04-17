@@ -2,25 +2,12 @@ import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
+import * as Types from '../types/index';
 
 
-<<<<<<< Updated upstream
-=======
-// // The "continue with othent" button should call the "logIn()" function below and have our logo and also the words in too (example at weavetransfer.com)
-// function OthentButton() {
-
-//   return (
-  
-//   <button>Continue with Othent</button>
-
-//   );
-// }
-
-
->>>>>>> Stashed changes
 
 // ping server
-async function ping() {
+export async function ping(): Promise<Types.PingReturnProps> {
     return await axios({
       method: 'GET',
       url: 'https://server.othent.io/',
@@ -39,18 +26,17 @@ async function ping() {
 
 
 // log in
-async function logIn() {
+export async function logIn(): Promise<Types.LogInReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        redirect_uri: window.location.origin
     });
 
     const isAuthenticated = await auth0Client.isAuthenticated(); 
     if (isAuthenticated) {
-        return {'response': 'User is already logged in'}
-    } else if (isAuthenticated === false) {
+        return await userDetails()
+    } else {
         const options = {
             authorizationParams: {
                 transaction_input: JSON.stringify({
@@ -64,7 +50,7 @@ async function logIn() {
             detailedResponse: true
         });
         const JWT = accessToken.id_token;
-        let decoded_JWT = jwt_decode(JWT)
+        let decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
 
         if (decoded_JWT.contract_id) {
 
@@ -100,11 +86,10 @@ async function logIn() {
 
 
 // log out
-async function logOut() {
+export async function logOut(): Promise<Types.LogOutReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        redirect_uri: window.location.origin
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
     await auth0Client.logout({
         logoutParams: {
@@ -118,11 +103,10 @@ async function logOut() {
 
 
 // user details
-async function userDetails() {
+export async function userDetails(): Promise<Types.UserDetailsReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        redirect_uri: window.location.origin
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
     const options = {
         authorizationParams: {
@@ -135,7 +119,7 @@ async function userDetails() {
     const accessToken = await auth0Client.getTokenSilently({
         detailedResponse: true
     });
-    let decoded_JWT = jwt_decode(accessToken.id_token)
+    let decoded_JWT: Types.DecodedJWT = jwt_decode(accessToken.id_token)
     delete decoded_JWT.nonce
     delete decoded_JWT.sid
     delete decoded_JWT.aud
@@ -150,12 +134,11 @@ async function userDetails() {
 
 
 // read contract
-async function readContract() {
+export async function readContract(): Promise<Types.ReadContractReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        redirect_uri: window.location.origin
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
     const options = {
         authorizationParams: {
@@ -188,79 +171,93 @@ async function readContract() {
 
 
 
-// sign transaction
-async function signTransaction({ method, data, tags }) {
+// sign transaction warp
+export async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Promise<Types.SignTransactionWarpReturnProps> {
 
-    tags ??= []
+    params.tags ??= []
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        redirect_uri: window.location.origin
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
 
-    if (method === 'warp') {
-        const othentFunction = data.othentFunction
-        const toContractId = data.toContractId
-        const toContractFunction = data.toContractFunction
-        const txnData = data.txnData
-        const warpData = {
-            function: othentFunction, 
-            data: {
-                toContractId: toContractId,
-                toContractFunction: toContractFunction,
-                txnData: txnData
-            }
+    const warpData = {
+        function: params.othentFunction, 
+        data: {
+            toContractId: params.data.toContractId,
+            toContractFunction: params.data.toContractFunction,
+            txnData: params.data.txnData
         }
-    
-        const options = {
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: othentFunction,
-                    warpData: warpData,
-                    tags: tags
-                })
-            }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
-        });
-        return {JWT: accessToken.id_token, method: 'warp'}
     }
-    if (method === 'arweave') {
-        const file = data.file
-        const fileBuffer =  new Uint8Array((await file.arrayBuffer()));
-        const file_hash = await sha256(fileBuffer)
-        const options = {
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: 'uploadData',
-                    file_hash: file_hash,
-                    tags: tags
-                })
-            }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
-        });
-        return { file: file, JWT: accessToken.id_token, method: 'arweave' };
+
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: params.othentFunction,
+                warpData: warpData,
+                tags: params.tags
+            })
+        }
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+
+    return {JWT: accessToken.id_token, method: 'warp'}
+
+}
+
+
+// sign transaction arweave
+export async function signTransactionArweave(params: Types.SignTransactionArweaveProps) : Promise<Types.SignTransactionArweaveReturnProps> {
+
+    params.tags ??= []
+
+    const auth0Client = await createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+
+    const data = params.data
+    let uint8Array;
+
+    if (typeof data === 'string') {
+        const encoder = new TextEncoder();
+        uint8Array = encoder.encode(data);
+    } else if (data instanceof Uint8Array) {
+        uint8Array = data;
+    } else if (data instanceof ArrayBuffer) {
+        uint8Array = new Uint8Array(data);
+    } else {
+        throw new TypeError('Unsupported data type');
     }
-    else { return {'response': 'no method detected'} }
+
+    const file_hash = await sha256(uint8Array)
+    const options = {
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: params.othentFunction,
+                file_hash: file_hash,
+                tags: params.tags
+            })
+        }
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+        detailedResponse: true
+    });
+    return { data: data, JWT: accessToken.id_token, method: 'arweave' };
 
 }
 
 
 
-
-
-
 // send transaction
-async function sendTransaction(signedTransaction) {
+export async function sendTransaction(params: Types.SendTransactionProps) : Promise<Types.SendTransactionReturnProps> {
 
-    if (signedTransaction.method === 'warp') {
-        const JWT = signedTransaction.JWT
+    if (params.signedTransaction.method === 'warp') {
+        const JWT = params.signedTransaction.JWT
         return await axios({
             method: 'POST',
             url: 'https://server.othent.io/send-transaction',
@@ -275,18 +272,11 @@ async function sendTransaction(signedTransaction) {
         });
 
     } 
-    else if (signedTransaction.method === 'arweave') {
-
-        const file = signedTransaction.file
-        const fileHashJWT = signedTransaction.JWT
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("fileHashJWT", fileHashJWT)
+    else if (params.signedTransaction.method === 'arweave') {
 
         return await fetch('https://server.othent.io/upload-data', {
             method: 'POST',
-            body: formData
+            body: JSON.stringify({ data: params.signedTransaction.data, dataHashJWT: params.signedTransaction.JWT})
         })
         .then(response => {
             return response.json();
@@ -300,7 +290,7 @@ async function sendTransaction(signedTransaction) {
         });
 
     } 
-    else { return {'response': 'no method detected', 'signedTransaction': signedTransaction} }
+    else { throw new Error ('no method detected') }
     
 }
 
@@ -308,19 +298,18 @@ async function sendTransaction(signedTransaction) {
 
 
 // backup keyfile
-async function initializeJWK(JWK_public_key_PEM) {
+export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.InitializeJWKReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        redirect_uri: window.location.origin
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
     });
 
     const options = {
         authorizationParams: {
             transaction_input: JSON.stringify({
                 othentFunction: 'initializeJWK',
-                warpData: { function: 'initializeJWK', data: { JWK_public_key: JWK_public_key_PEM } },
+                warpData: { function: 'initializeJWK', data: { JWK_public_key: params.JWKPublicKeyPEM } },
             })
         }
     };
@@ -347,11 +336,11 @@ async function initializeJWK(JWK_public_key_PEM) {
 
 
 // JWK backup transaction
-async function JWKBackupTxn(JWT) {
+export async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWKBackupTxnReturnProps> {
     return await axios({
         method: 'POST',
         url: 'https://server.othent.io/JWK-backup-transaction',
-        data: { JWT }
+        data: { JWT: params.JWT }
       })
       .then(response => {
         return response.data;
@@ -361,15 +350,3 @@ async function JWKBackupTxn(JWT) {
         throw error;
     });
 }
-
-
-
-
-
-
-<<<<<<< Updated upstream
-export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, initializeJWK, JWKBackupTxn };
-=======
-export default { ping, logIn, logOut, userDetails, readContract, signTransaction, sendTransaction, uploadData, initializeJWK, JWKBackupTxn };
->>>>>>> Stashed changes
-
