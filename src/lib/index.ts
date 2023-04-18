@@ -7,7 +7,7 @@ import * as Types from '../types/index';
 
 
 // ping server
-export async function ping(): Promise<Types.PingReturnProps> {
+async function ping(): Promise<Types.PingReturnProps> {
     return await axios({
       method: 'GET',
       url: 'https://server.othent.io/',
@@ -26,7 +26,7 @@ export async function ping(): Promise<Types.PingReturnProps> {
 
 
 // log in
-export async function logIn(): Promise<Types.LogInReturnProps> {
+async function logIn(): Promise<Types.LogInReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -86,7 +86,7 @@ export async function logIn(): Promise<Types.LogInReturnProps> {
 
 
 // log out
-export async function logOut(): Promise<Types.LogOutReturnProps> {
+async function logOut(): Promise<Types.LogOutReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -103,7 +103,7 @@ export async function logOut(): Promise<Types.LogOutReturnProps> {
 
 
 // user details
-export async function userDetails(): Promise<Types.UserDetailsReturnProps> {
+async function userDetails(): Promise<Types.UserDetailsReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -134,7 +134,7 @@ export async function userDetails(): Promise<Types.UserDetailsReturnProps> {
 
 
 // read contract
-export async function readContract(): Promise<Types.ReadContractReturnProps> {
+async function readContract(): Promise<Types.ReadContractReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -172,7 +172,7 @@ export async function readContract(): Promise<Types.ReadContractReturnProps> {
 
 
 // sign transaction warp
-export async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Promise<Types.SignTransactionWarpReturnProps> {
+async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Promise<Types.SignTransactionWarpReturnProps> {
 
     params.tags ??= []
 
@@ -204,101 +204,110 @@ export async function signTransactionWarp(params: Types.SignTransactionWarpProps
         detailedResponse: true
     });
 
-    return {JWT: accessToken.id_token, method: 'warp'}
+    return {JWT: accessToken.id_token}
 
 }
 
 
 // sign transaction arweave
-export async function signTransactionArweave(params: Types.SignTransactionArweaveProps) : Promise<Types.SignTransactionArweaveReturnProps> {
+async function signTransactionArweave(params: Types.SignTransactionArweaveProps): Promise<Types.SignTransactionArweaveReturnProps> {
 
-    params.tags ??= []
-
+    params.tags ??= [];
+  
     const auth0Client = await createAuth0Client({
-        domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+      domain: "othent.us.auth0.com",
+      clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
     });
-
-    const data = params.data
+  
     let uint8Array;
-
-    if (typeof data === 'string') {
-        const encoder = new TextEncoder();
-        uint8Array = encoder.encode(data);
-    } else if (data instanceof Uint8Array) {
-        uint8Array = data;
-    } else if (data instanceof ArrayBuffer) {
-        uint8Array = new Uint8Array(data);
+  
+    if (typeof params.data === "string") {
+      const encoder = new TextEncoder();
+      uint8Array = encoder.encode(params.data);
+    } else if (params.data instanceof Uint8Array) {
+      uint8Array = params.data;
+    } else if (params.data instanceof ArrayBuffer) {
+      uint8Array = new Uint8Array(params.data);
+    } else if (typeof params.data === "object") {
+      uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
     } else {
-        throw new TypeError('Unsupported data type');
+      throw new TypeError("Unsupported data type");
     }
-
-    const file_hash = await sha256(uint8Array)
+  
+    const file_hash = await sha256(uint8Array);
     const options = {
-        authorizationParams: {
-            transaction_input: JSON.stringify({
-                othentFunction: params.othentFunction,
-                file_hash: file_hash,
-                tags: params.tags
-            })
-        }
+      authorizationParams: {
+        transaction_input: JSON.stringify({
+          othentFunction: params.othentFunction,
+          file_hash: file_hash,
+          tags: params.tags,
+        }),
+      },
     };
     await auth0Client.loginWithPopup(options);
     const accessToken = await auth0Client.getTokenSilently({
-        detailedResponse: true
+      detailedResponse: true,
     });
-    return { data: data, JWT: accessToken.id_token, method: 'arweave' };
+    return { data: params.data, JWT: accessToken.id_token};
+  }
+  
 
+
+
+// send transaction - Arweave
+async function sendTransactionArweave(params: Types.SendTransactionArweaveProps) : Promise<Types.SendTransactionArweaveReturnProps> { 
+    
+    const data = params.data;
+
+    const formData = new FormData();
+
+    formData.append('file', data);
+    formData.append('dataHashJWT', params.JWT);
+
+    return await fetch('https://server.othent.io/upload-data', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        return response.json();
+    })
+    .then(data => {
+        return data;
+    })
+    .catch(error => {
+        console.log(error);
+        throw error;
+    });
+
+    
 }
 
 
 
-// send transaction
-export async function sendTransaction(params: Types.SendTransactionProps) : Promise<Types.SendTransactionReturnProps> {
+// send transaction - Warp
+async function sendTransactionWarp(params: Types.SendTransactionWarpProps) : Promise<Types.SendTransactionWarpReturnProps> {
 
-    if (params.signedTransaction.method === 'warp') {
-        const JWT = params.signedTransaction.JWT
-        return await axios({
-            method: 'POST',
-            url: 'https://server.othent.io/send-transaction',
-            data: { JWT }
-          })
-          .then(response => {
-            return response.data;
-        })
-        .catch(error => {
-            console.log(error.response.data);
-            throw error;
-        });
-
-    } 
-    else if (params.signedTransaction.method === 'arweave') {
-
-        return await fetch('https://server.othent.io/upload-data', {
-            method: 'POST',
-            body: JSON.stringify({ data: params.signedTransaction.data, dataHashJWT: params.signedTransaction.JWT})
+    const JWT = params.JWT
+    return await axios({
+        method: 'POST',
+        url: 'https://server.othent.io/send-transaction',
+        data: { JWT }
         })
         .then(response => {
-            return response.json();
-        })
-        .then(data => {
-            return data;
-        })
-        .catch(error => {
-            console.log(error);
-            throw error;
-        });
+        return response.data;
+    })
+    .catch(error => {
+        console.log(error.response.data);
+        throw error;
+    });
 
-    } 
-    else { throw new Error ('no method detected') }
-    
 }
 
 
 
 
 // backup keyfile
-export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.InitializeJWKReturnProps> {
+async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.InitializeJWKReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -309,7 +318,7 @@ export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<
         authorizationParams: {
             transaction_input: JSON.stringify({
                 othentFunction: 'initializeJWK',
-                warpData: { function: 'initializeJWK', data: { JWK_public_key: params.JWKPublicKeyPEM } },
+                warpData: { function: 'initializeJWK', data: { JWK_public_key: params.JWK_public_key } },
             })
         }
     };
@@ -318,6 +327,8 @@ export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<
         detailedResponse: true
     });
     const PEM_key_JWT = accessToken.id_token;
+
+    console.log(jwt_decode(PEM_key_JWT))
 
     return await axios({
         method: 'POST',
@@ -336,11 +347,11 @@ export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<
 
 
 // JWK backup transaction
-export async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWKBackupTxnReturnProps> {
+async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWKBackupTxnReturnProps> {
     return await axios({
         method: 'POST',
         url: 'https://server.othent.io/JWK-backup-transaction',
-        data: { JWT: params.JWT }
+        data: { JWK_signed_JWT: params.JWK_signed_JWT }
       })
       .then(response => {
         return response.data;
@@ -350,3 +361,7 @@ export async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Ty
         throw error;
     });
 }
+
+
+
+export default { ping, logIn, logOut, userDetails, readContract, signTransactionWarp, signTransactionArweave, sendTransactionWarp, sendTransactionArweave, initializeJWK, JWKBackupTxn }

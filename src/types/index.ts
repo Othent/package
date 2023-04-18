@@ -100,43 +100,49 @@ export interface SignTransactionWarpProps {
 }
 export interface SignTransactionWarpReturnProps {
     JWT: string, 
-    method: "warp",
 }
-
-
-// sign transaction Arweave
-export interface SignTransactionArweaveProps {
-    othentFunction: string,
-    data: string | Uint8Array | ArrayBuffer,
-    tags?: {
-        name: string;
-        value: string;
-    }[]
+// send transaction - Warp
+export interface SendTransactionWarpProps {
+    JWT: string
 }
-export interface SignTransactionArweaveReturnProps {
-    data: string | Uint8Array | ArrayBuffer, 
-    JWT: string, 
-    method: "arweave"
-}
-
-
-
-
-
-// send transaction
-export interface SendTransactionProps {
-    signedTransaction: SignTransactionArweaveReturnProps | SignTransactionWarpReturnProps
-}
-export interface SendTransactionReturnProps {
+export interface SendTransactionWarpReturnProps {
     success: boolean,
     transactionId: string,
 }
 
 
 
+
+
+// sign transaction Arweave
+export interface SignTransactionArweaveProps {
+    othentFunction: string,
+    data: File, 
+    tags?: {
+        name: string;
+        value: string;
+    }[]
+}
+export interface SignTransactionArweaveReturnProps {
+    data: File, 
+    JWT: string
+}
+// send transaction - Arweave
+export interface SendTransactionArweaveProps {
+    data: File, 
+    JWT: string
+}
+export interface SendTransactionArweaveReturnProps {
+    success: boolean,
+    transactionId: string,
+}
+
+
+
+
 // backup keyfile
 export interface InitializeJWKProps {
-    JWKPublicKeyPEM: string
+    JWK_public_key: string
 }
 export interface InitializeJWKReturnProps {
     success: boolean,
@@ -147,7 +153,7 @@ export interface InitializeJWKReturnProps {
 
 // JWK transaction
 export interface JWKBackupTxnProps {
-    JWT: string
+    JWK_signed_JWT: string
 }
 export interface JWKBackupTxnReturnProps {
     success: boolean,
