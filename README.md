@@ -13,29 +13,8 @@ To use the library, you can import it into your project:
 import othent from 'othent';
 ```
 
-## Functions
-#### The following functions are available in the Othent Library:
-
-ping(): Ping the Othent server.
-
-logIn(): Log in a user and return their details.
-
-logOut(): Log out the current user.
-
-userDetails(): Retrieve the details of the current user.
-
-readContract(): Read data from the current user's contract.
-
-signTransaction({ method, data, tags }): Sign a transaction with the current user's account.
-
-sendTransaction(signedTransaction): Send a signed transaction to Othent.
-
-initializeJWK(JWK_public_key_PEM): backup a Othent account with a JWK public key.
-
-JWKBackupTxn(signedJWTByJWK): Send a transaction with the specified JWK.
-
 ## Examples
-#### Please find examples at https://docs.othent.io/developers/sdk
+#### Please refer to the docs at https://docs.othent.io/developers/sdk
 
 ## Documentation
 For more information on how to use the Othent Library, please see the official Othent documentation at https://docs.othent.io/developers/sdk.
