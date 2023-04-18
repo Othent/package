@@ -13,9 +13,6 @@ To use the library, you can import it into your project:
 import othent from 'othent';
 ```
 
-## Examples
-#### Please refer to the docs at https://docs.othent.io/developers/sdk
-
 ## Documentation
 For more information on how to use the Othent Library, please see the official Othent documentation at https://docs.othent.io/developers/sdk.
 
