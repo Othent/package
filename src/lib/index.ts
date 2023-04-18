@@ -64,19 +64,39 @@ async function logIn(): Promise<Types.LogInReturnProps> {
             return decoded_JWT
             
         } else {
-
+            
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/create-user',
                 data: { JWT }
             })
             .then(response => {
-                return response.data;
+                const new_user_details = response.data
+                
+                return {
+                    contract_id: new_user_details.contract_id,
+                    given_name: new_user_details.given_name,
+                    family_name: new_user_details.family_name,
+                    nickname: new_user_details.nickname,
+                    name: new_user_details.name,
+                    picture: new_user_details.picture,
+                    locale: new_user_details.locale,
+                    email: new_user_details.email,
+                    email_verified: new_user_details.email_verified,
+                    sub: new_user_details.sub,
+                    success: new_user_details.success,
+                    message: new_user_details.message
+                }
+
             })
             .catch(error => {
                 console.log(error.response.data);
                 throw error;
             });
+
+
+
+        
         }
 
     }

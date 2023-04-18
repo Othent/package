@@ -34,15 +34,17 @@ export interface PingReturnProps {
 // logIn
 export interface LogInReturnProps {
     contract_id: string,
-      given_name: string,
-      family_name: string,
-      nickname: string,
-      name: string,
-      picture: string,
-      locale: string,
-      email: string,
-      email_verified: string,
-      sub: string,
+    given_name: string,
+    family_name: string,
+    nickname: string,
+    name: string,
+    picture: string,
+    locale: string,
+    email: string,
+    email_verified: string,
+    sub: string,
+    success?: string,
+    message?: string
 }
 
 
