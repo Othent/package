@@ -279,9 +279,13 @@ async function sendTransactionArweave(params: Types.SendTransactionArweaveProps)
     
     const data = params.data;
 
+    const blob = new Blob([data])
+
+    console.log(blob)
+
     const formData = new FormData();
 
-    formData.append('file', data);
+    formData.append('file', blob);
     formData.append('dataHashJWT', params.JWT);
 
     return await fetch('https://server.othent.io/upload-data', {
@@ -348,8 +352,6 @@ async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.I
     });
     const PEM_key_JWT = accessToken.id_token;
 
-    console.log(jwt_decode(PEM_key_JWT))
-
     return await axios({
         method: 'POST',
         url: 'https://server.othent.io/initialize-JWK',
@@ -384,4 +386,24 @@ async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWK
 
 
 
-export default { ping, logIn, logOut, userDetails, readContract, signTransactionWarp, signTransactionArweave, sendTransactionWarp, sendTransactionArweave, initializeJWK, JWKBackupTxn }
+// Read custom contract
+async function readCustomContract(params: Types.readCustomContractProps) : Promise<Types.readCustomContractReturnProps> {
+    return await axios({
+        method: 'POST',
+        url: 'https://server.othent.io/read-custom-contract',
+        data: { contract_id: params.contract_id }
+      })
+      .then(response => {
+        return response.data;
+    })
+    .catch(error => {
+        console.log(error.response.data);
+        throw error;
+    });
+}
+
+
+
+
+
+export default { ping, logIn, logOut, userDetails, readContract, signTransactionWarp, signTransactionArweave, sendTransactionWarp, sendTransactionArweave, initializeJWK, JWKBackupTxn, readCustomContract }
