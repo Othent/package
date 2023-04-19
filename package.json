@@ -1,9 +1,8 @@
 {
   "name": "othent",
-  "version": "1.0.34",
+  "version": "1.0.37",
   "description": "Merging Web2 to Web3 user logins with a familiar and simple interface",
   "main": "dist/lib/index.js",
-  "types": "dist/index.d.ts",
   "type": "module",
   "publishConfig": {
     "access": "public"

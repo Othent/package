@@ -73,15 +73,9 @@ export interface UserDetailsReturnProps {
 
 // read contract
 export interface ReadContractReturnProps {
-    state: {
-        App: string,
-        user_id: string,
-        last_nonce: number,
-        Description: string,
-        JWK_public_key: string,
-        contract_address: string
-    },
-    errors: object
+    state: object, 
+    errors: object, 
+    validity: object
 }
 
 
@@ -110,6 +104,10 @@ export interface SendTransactionWarpProps {
 export interface SendTransactionWarpReturnProps {
     success: boolean,
     transactionId: string,
+    bundlrResponse: object,
+    errors: object,
+    state: object,
+    validity: object
 }
 
 
@@ -169,8 +167,9 @@ export interface readCustomContractProps {
     contract_id: string
 }
 export interface readCustomContractReturnProps {
-    state: object,
-    errors: object
+    state: object, 
+    errors: object, 
+    validity: object
 }
 
 
