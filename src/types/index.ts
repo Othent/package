@@ -104,10 +104,9 @@ export interface SendTransactionWarpProps {
 export interface SendTransactionWarpReturnProps {
     success: boolean,
     transactionId: string,
-    bundlrResponse: object,
+    bundlrId: string,
     errors: object,
-    state: object,
-    validity: object
+    state: object
 }
 
 
