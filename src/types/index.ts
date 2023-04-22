@@ -1,3 +1,5 @@
+import { base64url } from "jose";
+
 // universal
 export interface DecodedJWT {
     contract_id: string,
@@ -68,6 +70,10 @@ export interface UserDetailsReturnProps {
     email_verified: string,
     sub: string,
 }
+export interface UserDetailsErrorReturnProps {
+    success: boolean;
+    message: string;
+}
 
 
 
@@ -95,7 +101,9 @@ export interface SignTransactionWarpProps {
     }[]
 }
 export interface SignTransactionWarpReturnProps {
-    JWT: string, 
+    JWT?: string, 
+    success?: boolean,
+    message?: string
 }
 // send transaction - Warp
 export interface SendTransactionWarpProps {
@@ -123,8 +131,10 @@ export interface SignTransactionArweaveProps {
     }[]
 }
 export interface SignTransactionArweaveReturnProps {
-    data: File, 
-    JWT: string
+    data?: File, 
+    JWT?: string
+    success?: boolean,
+    message?: string
 }
 // send transaction - Arweave
 export interface SendTransactionArweaveProps {

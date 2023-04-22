@@ -35,7 +35,7 @@ async function logIn(): Promise<Types.LogInReturnProps> {
 
     const isAuthenticated = await auth0Client.isAuthenticated(); 
     if (isAuthenticated) {
-        return await userDetails()
+        return await userDetails() as Types.UserDetailsReturnProps
     } else {
         const options = {
             authorizationParams: {
@@ -122,8 +122,7 @@ async function logOut(): Promise<Types.LogOutReturnProps> {
 
 
 
-// user details
-async function userDetails(): Promise<Types.UserDetailsReturnProps> {
+async function userDetails(): Promise<Types.UserDetailsReturnProps | Types.UserDetailsErrorReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -139,16 +138,35 @@ async function userDetails(): Promise<Types.UserDetailsReturnProps> {
     const accessToken = await auth0Client.getTokenSilently({
         detailedResponse: true
     });
-    let decoded_JWT: Types.DecodedJWT = jwt_decode(accessToken.id_token)
-    delete decoded_JWT.nonce
-    delete decoded_JWT.sid
-    delete decoded_JWT.aud
-    delete decoded_JWT.iss
-    delete decoded_JWT.iat
-    delete decoded_JWT.exp
-    delete decoded_JWT.updated_at
-    return decoded_JWT
+    const JWT = accessToken.id_token
+    const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+    if (decoded_JWT.contract_id) {
+        delete decoded_JWT.nonce
+        delete decoded_JWT.sid
+        delete decoded_JWT.aud
+        delete decoded_JWT.iss
+        delete decoded_JWT.iat
+        delete decoded_JWT.exp
+        delete decoded_JWT.updated_at
+        return decoded_JWT;
+    } else {
+        return { 
+            success: false, 
+            message: 'Please create a Othent account',
+            contract_id: 'false',
+            given_name: 'false',
+            family_name: 'false',
+            nickname: 'false',
+            name: 'false',
+            picture: 'false',
+            locale: 'false',
+            email: 'false',
+            email_verified: 'false',
+            sub: 'false',
+        };
+    }
 }
+
 
 
 
@@ -224,7 +242,14 @@ async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Pro
         detailedResponse: true
     });
 
-    return {JWT: accessToken.id_token}
+    const JWT = accessToken.id_token
+    const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+
+    if (decoded_JWT.contract_id) {
+        return {JWT: accessToken.id_token}
+    } else {
+        return {success: false, message:"Please create a Othent account"}
+    }
 
 }
 
@@ -268,7 +293,15 @@ async function signTransactionArweave(params: Types.SignTransactionArweaveProps)
     const accessToken = await auth0Client.getTokenSilently({
       detailedResponse: true,
     });
-    return { data: params.data, JWT: accessToken.id_token};
+    const JWT = accessToken.id_token
+    const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+
+    if (decoded_JWT.contract_id) {
+        return { data: params.data, JWT: accessToken.id_token};
+    } else {
+        return {success: false, message:"Please create a Othent account"}
+    }
+
   }
   
 
@@ -387,7 +420,7 @@ async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWK
 
 
 // Read custom contract
-async function readCustomContract(params: Types.readCustomContractProps) : Promise<Types.readCustomContractReturnProps> {
+export async function readCustomContract(params: Types.readCustomContractProps) : Promise<Types.readCustomContractReturnProps> {
     return await axios({
         method: 'POST',
         url: 'https://server.othent.io/read-custom-contract',
@@ -407,3 +440,4 @@ async function readCustomContract(params: Types.readCustomContractProps) : Promi
 
 
 export default { ping, logIn, logOut, userDetails, readContract, signTransactionWarp, signTransactionArweave, sendTransactionWarp, sendTransactionArweave, initializeJWK, JWKBackupTxn, readCustomContract }
+
