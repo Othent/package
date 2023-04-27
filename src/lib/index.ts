@@ -7,7 +7,7 @@ import * as Types from '../types/index';
 
 
 // ping server
-async function ping(): Promise<Types.PingReturnProps> {
+export async function ping(): Promise<Types.PingReturnProps> {
     return await axios({
       method: 'GET',
       url: 'https://server.othent.io/',
@@ -26,7 +26,7 @@ async function ping(): Promise<Types.PingReturnProps> {
 
 
 // log in
-async function logIn(): Promise<Types.LogInReturnProps> {
+export async function logIn(): Promise<Types.LogInReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -106,7 +106,7 @@ async function logIn(): Promise<Types.LogInReturnProps> {
 
 
 // log out
-async function logOut(): Promise<Types.LogOutReturnProps> {
+export async function logOut(): Promise<Types.LogOutReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -122,7 +122,7 @@ async function logOut(): Promise<Types.LogOutReturnProps> {
 
 
 
-async function userDetails(): Promise<Types.UserDetailsReturnProps | Types.UserDetailsErrorReturnProps> {
+export async function userDetails(): Promise<Types.UserDetailsReturnProps | Types.UserDetailsErrorReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -172,7 +172,7 @@ async function userDetails(): Promise<Types.UserDetailsReturnProps | Types.UserD
 
 
 // read contract
-async function readContract(): Promise<Types.ReadContractReturnProps> {
+export async function readContract(): Promise<Types.ReadContractReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -210,7 +210,7 @@ async function readContract(): Promise<Types.ReadContractReturnProps> {
 
 
 // sign transaction warp
-async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Promise<Types.SignTransactionWarpReturnProps> {
+export async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Promise<Types.SignTransactionWarpReturnProps> {
 
     params.tags ??= []
 
@@ -255,7 +255,7 @@ async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Pro
 
 
 // sign transaction arweave
-async function signTransactionArweave(params: Types.SignTransactionArweaveProps): Promise<Types.SignTransactionArweaveReturnProps> {
+export async function signTransactionArweave(params: Types.SignTransactionArweaveProps): Promise<Types.SignTransactionArweaveReturnProps> {
 
     params.tags ??= [];
   
@@ -308,7 +308,7 @@ async function signTransactionArweave(params: Types.SignTransactionArweaveProps)
 
 
 // send transaction - Arweave
-async function sendTransactionArweave(params: Types.SendTransactionArweaveProps) : Promise<Types.SendTransactionArweaveReturnProps> { 
+export async function sendTransactionArweave(params: Types.SendTransactionArweaveProps) : Promise<Types.SendTransactionArweaveReturnProps> { 
     
     const data = params.data;
 
@@ -342,7 +342,7 @@ async function sendTransactionArweave(params: Types.SendTransactionArweaveProps)
 
 
 // send transaction - Warp
-async function sendTransactionWarp(params: Types.SendTransactionWarpProps) : Promise<Types.SendTransactionWarpReturnProps> {
+export async function sendTransactionWarp(params: Types.SendTransactionWarpProps) : Promise<Types.SendTransactionWarpReturnProps> {
 
     const JWT = params.JWT
     return await axios({
@@ -364,7 +364,7 @@ async function sendTransactionWarp(params: Types.SendTransactionWarpProps) : Pro
 
 
 // backup keyfile
-async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.InitializeJWKReturnProps> {
+export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.InitializeJWKReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -402,7 +402,7 @@ async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.I
 
 
 // JWK backup transaction
-async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWKBackupTxnReturnProps> {
+export async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWKBackupTxnReturnProps> {
     return await axios({
         method: 'POST',
         url: 'https://server.othent.io/JWK-backup-transaction',

@@ -1,5 +1,3 @@
-import { base64url } from "jose";
-
 // universal
 export interface DecodedJWT {
     contract_id: string,
