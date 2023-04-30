@@ -101,11 +101,19 @@ export interface SignTransactionWarpProps {
 export interface SignTransactionWarpReturnProps {
     JWT?: string, 
     success?: boolean,
-    message?: string
+    message?: string,
+    tags?: {
+        name: string;
+        value: string;
+    }[]
 }
 // send transaction - Warp
 export interface SendTransactionWarpProps {
-    JWT: string
+    JWT: string,
+    tags?: {
+        name: string;
+        value: string;
+    }[]
 }
 export interface SendTransactionWarpReturnProps {
     success: boolean,
@@ -132,14 +140,57 @@ export interface SignTransactionArweaveReturnProps {
     data?: File, 
     JWT?: string
     success?: boolean,
-    message?: string
+    message?: string,
+    tags?: {
+        name: string;
+        value: string;
+    }[]
 }
 // send transaction - Arweave
 export interface SendTransactionArweaveProps {
     data: File, 
-    JWT: string
+    JWT: string,
+    tags?: {
+        name: string;
+        value: string;
+    }[]
 }
 export interface SendTransactionArweaveReturnProps {
+    success: boolean,
+    transactionId: string,
+}
+
+
+
+// sign transaction - bundlr
+export interface SignTransactionBundlrProps {
+    othentFunction: string,
+    data: File, 
+    tags?: {
+        name: string;
+        value: string;
+    }[]
+}
+export interface SignTransactionBundlrReturnProps {
+    data?: File, 
+    JWT?: string
+    success?: boolean,
+    message?: string, 
+    tags?: {
+        name: string;
+        value: string;
+    }[]
+}
+// send transaction - bundlr
+export interface SendTransactionBundlrProps {
+    data: File, 
+    JWT: string, 
+    tags?: {
+        name: string;
+        value: string;
+    }[]
+}
+export interface SendTransactionBundlrReturnProps {
     success: boolean,
     transactionId: string,
 }
