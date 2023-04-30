@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
-import * as Types from '../types/index';
+import * as Types from '../types/index.js';
 
 
 
@@ -233,7 +233,6 @@ export async function signTransactionWarp(params: Types.SignTransactionWarpProps
             transaction_input: JSON.stringify({
                 othentFunction: params.othentFunction,
                 warpData: warpData,
-                tags: params.tags
             })
         }
     };
@@ -246,12 +245,39 @@ export async function signTransactionWarp(params: Types.SignTransactionWarpProps
     const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
 
     if (decoded_JWT.contract_id) {
-        return {JWT: accessToken.id_token}
+        return {JWT: accessToken.id_token, tags: params.tags}
     } else {
         return {success: false, message:"Please create a Othent account"}
     }
 
 }
+
+
+
+
+// send transaction - Warp
+export async function sendTransactionWarp(params: Types.SendTransactionWarpProps) : Promise<Types.SendTransactionWarpReturnProps> {
+
+    const JWT = params.JWT
+    const tags = params.tags
+    return await axios({
+        method: 'POST',
+        url: 'https://server.othent.io/send-transaction',
+        data: { JWT, tags }
+        })
+        .then(response => {
+        return response.data;
+    })
+    .catch(error => {
+        console.log(error.response.data);
+        throw error;
+    });
+
+}
+
+
+
+
 
 
 // sign transaction arweave
@@ -285,7 +311,6 @@ export async function signTransactionArweave(params: Types.SignTransactionArweav
         transaction_input: JSON.stringify({
           othentFunction: params.othentFunction,
           file_hash: file_hash,
-          tags: params.tags,
         }),
       },
     };
@@ -297,7 +322,7 @@ export async function signTransactionArweave(params: Types.SignTransactionArweav
     const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
 
     if (decoded_JWT.contract_id) {
-        return { data: params.data, JWT: accessToken.id_token};
+        return { data: params.data, JWT: accessToken.id_token, tags: params.tags};
     } else {
         return {success: false, message:"Please create a Othent account"}
     }
@@ -314,14 +339,13 @@ export async function sendTransactionArweave(params: Types.SendTransactionArweav
 
     const blob = new Blob([data])
 
-    console.log(blob)
-
     const formData = new FormData();
 
     formData.append('file', blob);
     formData.append('dataHashJWT', params.JWT);
+    formData.append('tags', JSON.stringify(params.tags));
 
-    return await fetch('https://server.othent.io/upload-data', {
+    return await fetch('https://server.othent.io/upload-data-arweave', {
         method: 'POST',
         body: formData
     })
@@ -341,24 +365,97 @@ export async function sendTransactionArweave(params: Types.SendTransactionArweav
 
 
 
-// send transaction - Warp
-export async function sendTransactionWarp(params: Types.SendTransactionWarpProps) : Promise<Types.SendTransactionWarpReturnProps> {
 
-    const JWT = params.JWT
-    return await axios({
+
+
+
+
+// sign transaction - bundlr
+export async function signTransactionBundlr(params: Types.SignTransactionBundlrProps): Promise<Types.SignTransactionBundlrReturnProps> {
+
+    params.tags ??= [];
+  
+    const auth0Client = await createAuth0Client({
+      domain: "othent.us.auth0.com",
+      clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+    });
+  
+    let uint8Array;
+  
+    if (typeof params.data === "string") {
+      const encoder = new TextEncoder();
+      uint8Array = encoder.encode(params.data);
+    } else if (params.data instanceof Uint8Array) {
+      uint8Array = params.data;
+    } else if (params.data instanceof ArrayBuffer) {
+      uint8Array = new Uint8Array(params.data);
+    } else if (typeof params.data === "object") {
+      uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
+    } else {
+      throw new TypeError("Unsupported data type");
+    }
+  
+    const file_hash = await sha256(uint8Array);
+    const options = {
+      authorizationParams: {
+        transaction_input: JSON.stringify({
+          othentFunction: params.othentFunction,
+          file_hash: file_hash,
+        }),
+      },
+    };
+    await auth0Client.loginWithPopup(options);
+    const accessToken = await auth0Client.getTokenSilently({
+      detailedResponse: true,
+    });
+    const JWT = accessToken.id_token
+    const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+
+    if (decoded_JWT.contract_id) {
+        return { data: params.data, JWT: accessToken.id_token, tags: params.tags };
+    } else {
+        return {success: false, message:"Please create a Othent account"}
+    }
+
+  }
+  
+
+
+
+// send transaction - bundlr
+export async function sendTransactionBundlr(params: Types.SendTransactionBundlrProps) : Promise<Types.SendTransactionBundlrReturnProps> { 
+    
+    const data = params.data;
+
+    const blob = new Blob([data])
+
+    const formData = new FormData();
+
+    formData.append('file', blob);
+    formData.append('dataHashJWT', params.JWT);
+    formData.append('tags', JSON.stringify(params.tags));
+
+    return await fetch('https://server.othent.io/upload-data-bundlr', {
         method: 'POST',
-        url: 'https://server.othent.io/send-transaction',
-        data: { JWT }
-        })
-        .then(response => {
-        return response.data;
+        body: formData
+    })
+    .then(response => {
+        return response.json();
+    })
+    .then(data => {
+        return data;
     })
     .catch(error => {
-        console.log(error.response.data);
+        console.log(error);
         throw error;
     });
 
+    
 }
+
+
+
+
 
 
 
@@ -439,5 +536,5 @@ export async function readCustomContract(params: Types.readCustomContractProps) 
 
 
 
-export default { ping, logIn, logOut, userDetails, readContract, signTransactionWarp, signTransactionArweave, sendTransactionWarp, sendTransactionArweave, initializeJWK, JWKBackupTxn, readCustomContract }
+export default { ping, logIn, logOut, userDetails, readContract, signTransactionWarp, sendTransactionWarp, signTransactionArweave, sendTransactionArweave, signTransactionBundlr, sendTransactionBundlr, initializeJWK, JWKBackupTxn, readCustomContract }
 
