@@ -10,6 +10,7 @@ jobs:
         name: 🚀 publish
         steps:
             - name: 📚 checkout
+              runs-on: ubuntu-latest
               uses: actions/checkout@v2.1.1
             - name: 🟢 node
               uses: actions/setup-node@v1.4.2
