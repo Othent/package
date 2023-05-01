@@ -1,6 +1,6 @@
 {
   "name": "othent",
-  "version": "1.0.43",
+  "version": "1.0.44",
   "description": "Merging Web2 to Web3 user logins with a familiar and simple interface",
   "type": "module",
   "main": "dist/index.js",
