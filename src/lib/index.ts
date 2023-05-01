@@ -414,31 +414,29 @@ export async function sendTransactionBundlr(params: Types.SendTransactionBundlrP
     
     const data = params.data;
 
-    const blob = new Blob([data])
-
+    const blob = new Blob([data]);
+  
     const formData = new FormData();
-
-    formData.append('file', blob);
-    formData.append('dataHashJWT', params.JWT);
-    formData.append('tags', JSON.stringify(params.tags));
-
-    return await fetch('https://server.othent.io/upload-data-bundlr', {
-        method: 'POST',
-        body: formData
+  
+    formData.append("file", blob);
+    formData.append("dataHashJWT", params.JWT);
+    formData.append("tags", JSON.stringify(params.tags));
+  
+    return await fetch("https://server.othent.io/upload-data-bundlr", {
+      method: "POST",
+      body: formData,
     })
-    .then(response => {
+      .then((response) => {
         return response.json();
-    })
-    .then(data => {
+      })
+      .then((data) => {
         return data;
-    })
-    .catch(error => {
+      })
+      .catch((error) => {
         console.log(error);
         throw error;
-    });
-
-    
-}
+      });
+  }
 
 
 

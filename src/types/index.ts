@@ -156,35 +156,37 @@ export interface SendTransactionArweaveReturnProps {
 
 // sign transaction - bundlr
 export interface SignTransactionBundlrProps {
-    othentFunction: string,
-    data: File, 
+    othentFunction: string;
+    data: File;
     tags?: {
-        name: string;
-        value: string;
-    }[]
-}
-export interface SignTransactionBundlrReturnProps {
-    data: File, 
-    JWT: string
+      name: string;
+      value: string;
+    }[];
+  }
+  
+  export interface SignTransactionBundlrReturnProps {
+    data: File;
+    JWT: string;
     tags?: {
-        name: string;
-        value: string;
-    }[]
-}
-// send transaction - bundlr
-export interface SendTransactionBundlrProps {
-    data: File, 
-    JWT: string, 
+      name: string;
+      value: string;
+    }[];
+  }
+  
+  // send transaction - bundlr
+  export interface SendTransactionBundlrProps {
+    data: File;
+    JWT: string;
     tags?: {
-        name: string;
-        value: string;
-    }[]
-}
-export interface SendTransactionBundlrReturnProps {
-    success: boolean,
-    transactionId: string,
-}
-
+      name: string;
+      value: string;
+    }[];
+  }
+  
+  export interface SendTransactionBundlrReturnProps {
+    success: boolean;
+    transactionId: string;
+  }
 
 
 
