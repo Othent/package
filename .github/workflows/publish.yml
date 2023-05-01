@@ -15,9 +15,9 @@ jobs:
       - name: 📚 checkout
         uses: actions/checkout@v2.1.1
       - name: 🟢 node
-        uses: actions/setup-node@v1.4.2
+        uses: actions/setup-node@v2.5.0
         with:
-          node-version: 12
+          node-version: 16
           registry-url: https://registry.npmjs.org
         env:
           envFile: .env
@@ -29,5 +29,3 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
-          
-
