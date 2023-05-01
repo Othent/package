@@ -22,12 +22,9 @@ jobs:
         env:
           envFile: .env
       - name: 📦 install dependencies
-        run: npm ci
+        run: npm install
       - name: 📝 build
-        run: |
-          npm install -g rimraf
-          rimraf ./dist
-          tsc
+        run: npm run build
       - name: 🚀 publish
         run: npm publish --access public
         env:
