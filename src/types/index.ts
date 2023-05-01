@@ -96,7 +96,7 @@ export interface SignTransactionWarpProps {
 }
 export interface SignTransactionWarpReturnProps {
     JWT: string, 
-    tags: {
+    tags?: {
         name: string;
         value: string;
     }[]
@@ -133,7 +133,7 @@ export interface SignTransactionArweaveProps {
 export interface SignTransactionArweaveReturnProps {
     data: File, 
     JWT: string
-    tags: {
+    tags?: {
         name: string;
         value: string;
     }[]
@@ -166,7 +166,7 @@ export interface SignTransactionBundlrProps {
 export interface SignTransactionBundlrReturnProps {
     data: File, 
     JWT: string
-    tags: {
+    tags?: {
         name: string;
         value: string;
     }[]
