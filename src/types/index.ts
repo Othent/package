@@ -68,10 +68,6 @@ export interface UserDetailsReturnProps {
     email_verified: string,
     sub: string,
 }
-export interface UserDetailsErrorReturnProps {
-    success: boolean;
-    message: string;
-}
 
 
 
@@ -99,10 +95,8 @@ export interface SignTransactionWarpProps {
     }[]
 }
 export interface SignTransactionWarpReturnProps {
-    JWT?: string, 
-    success?: boolean,
-    message?: string,
-    tags?: {
+    JWT: string, 
+    tags: {
         name: string;
         value: string;
     }[]
@@ -137,11 +131,9 @@ export interface SignTransactionArweaveProps {
     }[]
 }
 export interface SignTransactionArweaveReturnProps {
-    data?: File, 
-    JWT?: string
-    success?: boolean,
-    message?: string,
-    tags?: {
+    data: File, 
+    JWT: string
+    tags: {
         name: string;
         value: string;
     }[]
@@ -172,11 +164,9 @@ export interface SignTransactionBundlrProps {
     }[]
 }
 export interface SignTransactionBundlrReturnProps {
-    data?: File, 
-    JWT?: string
-    success?: boolean,
-    message?: string, 
-    tags?: {
+    data: File, 
+    JWT: string
+    tags: {
         name: string;
         value: string;
     }[]

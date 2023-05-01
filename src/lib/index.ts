@@ -122,7 +122,7 @@ export async function logOut(): Promise<Types.LogOutReturnProps> {
 
 
 
-export async function userDetails(): Promise<Types.UserDetailsReturnProps | Types.UserDetailsErrorReturnProps> {
+export async function userDetails(): Promise<Types.UserDetailsReturnProps> {
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
