@@ -9,16 +9,16 @@ import * as Types from '../types/index.js';
 // ping server
 export async function ping(): Promise<Types.PingReturnProps> {
     return await axios({
-      method: 'GET',
-      url: 'https://server.othent.io/',
+        method: 'GET',
+        url: 'https://server.othent.io/',
     })
-    .then(response => {
-        return response.data;
-    })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
 }
 
 
@@ -33,14 +33,14 @@ export async function logIn(): Promise<Types.LogInReturnProps> {
         clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
     });
 
-    const isAuthenticated = await auth0Client.isAuthenticated(); 
+    const isAuthenticated = await auth0Client.isAuthenticated();
     if (isAuthenticated) {
         return await userDetails() as Types.UserDetailsReturnProps
     } else {
         const options = {
             authorizationParams: {
                 transaction_input: JSON.stringify({
-                    othentFunction: "idToken", 
+                    othentFunction: "idToken",
                 }),
                 redirect_uri: window.location.origin
             }
@@ -62,41 +62,41 @@ export async function logIn(): Promise<Types.LogInReturnProps> {
             delete decoded_JWT.exp
             delete decoded_JWT.updated_at
             return decoded_JWT
-            
+
         } else {
-            
+
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/create-user',
                 data: { JWT }
             })
-            .then(response => {
-                const new_user_details = response.data
-                
-                return {
-                    contract_id: new_user_details.contract_id,
-                    given_name: new_user_details.given_name,
-                    family_name: new_user_details.family_name,
-                    nickname: new_user_details.nickname,
-                    name: new_user_details.name,
-                    picture: new_user_details.picture,
-                    locale: new_user_details.locale,
-                    email: new_user_details.email,
-                    email_verified: new_user_details.email_verified,
-                    sub: new_user_details.sub,
-                    success: new_user_details.success,
-                    message: new_user_details.message
-                }
+                .then(response => {
+                    const new_user_details = response.data
 
-            })
-            .catch(error => {
-                console.log(error.response.data);
-                throw error;
-            });
+                    return {
+                        contract_id: new_user_details.contract_id,
+                        given_name: new_user_details.given_name,
+                        family_name: new_user_details.family_name,
+                        nickname: new_user_details.nickname,
+                        name: new_user_details.name,
+                        picture: new_user_details.picture,
+                        locale: new_user_details.locale,
+                        email: new_user_details.email,
+                        email_verified: new_user_details.email_verified,
+                        sub: new_user_details.sub,
+                        success: new_user_details.success,
+                        message: new_user_details.message
+                    }
+
+                })
+                .catch(error => {
+                    console.log(error.response.data);
+                    throw error;
+                });
 
 
 
-        
+
         }
 
     }
@@ -114,9 +114,9 @@ export async function logOut(): Promise<Types.LogOutReturnProps> {
     await auth0Client.logout({
         logoutParams: {
             returnTo: window.location.origin
-          }
-      });
-    return {'response': 'user logged out'}
+        }
+    });
+    return { 'response': 'user logged out' }
 }
 
 
@@ -130,7 +130,7 @@ export async function userDetails(): Promise<Types.UserDetailsReturnProps> {
     const options = {
         authorizationParams: {
             transaction_input: JSON.stringify({
-                othentFunction: "idToken", 
+                othentFunction: "idToken",
             })
         }
     };
@@ -168,7 +168,7 @@ export async function readContract(): Promise<Types.ReadContractReturnProps> {
     const options = {
         authorizationParams: {
             transaction_input: JSON.stringify({
-                othentFunction: "idToken", 
+                othentFunction: "idToken",
             })
         }
     };
@@ -182,14 +182,14 @@ export async function readContract(): Promise<Types.ReadContractReturnProps> {
         method: 'POST',
         url: 'https://server.othent.io/read-contract',
         data: { JWT }
-      })
-      .then(response => {
-        return response.data;
     })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
 }
 
 
@@ -197,7 +197,7 @@ export async function readContract(): Promise<Types.ReadContractReturnProps> {
 
 
 // sign transaction warp
-export async function signTransactionWarp(params: Types.SignTransactionWarpProps) : Promise<Types.SignTransactionWarpReturnProps> {
+export async function signTransactionWarp(params: Types.SignTransactionWarpProps): Promise<Types.SignTransactionWarpReturnProps> {
 
     params.tags ??= []
 
@@ -207,7 +207,7 @@ export async function signTransactionWarp(params: Types.SignTransactionWarpProps
     });
 
     const warpData = {
-        function: params.othentFunction, 
+        function: params.othentFunction,
         data: {
             toContractId: params.data.toContractId,
             toContractFunction: params.data.toContractFunction,
@@ -231,11 +231,10 @@ export async function signTransactionWarp(params: Types.SignTransactionWarpProps
     const JWT = accessToken.id_token
     const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
 
-    if (decoded_JWT.contract_id) {
-        return {JWT: accessToken.id_token, tags: params.tags}
-    } else {
+    if (!decoded_JWT.contract_id) {
         throw new Error(`{success: false, message:"Please create a Othent account"}`)
     }
+    return { JWT: accessToken.id_token, tags: params.tags };
 
 }
 
@@ -243,7 +242,7 @@ export async function signTransactionWarp(params: Types.SignTransactionWarpProps
 
 
 // send transaction - Warp
-export async function sendTransactionWarp(params: Types.SendTransactionWarpProps) : Promise<Types.SendTransactionWarpReturnProps> {
+export async function sendTransactionWarp(params: Types.SendTransactionWarpProps): Promise<Types.SendTransactionWarpReturnProps> {
 
     const JWT = params.JWT
     const tags = params.tags
@@ -251,14 +250,14 @@ export async function sendTransactionWarp(params: Types.SendTransactionWarpProps
         method: 'POST',
         url: 'https://server.othent.io/send-transaction',
         data: { JWT, tags }
-        })
-        .then(response => {
-        return response.data;
     })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
 
 }
 
@@ -271,57 +270,56 @@ export async function sendTransactionWarp(params: Types.SendTransactionWarpProps
 export async function signTransactionArweave(params: Types.SignTransactionArweaveProps): Promise<Types.SignTransactionArweaveReturnProps> {
 
     params.tags ??= [];
-  
+
     const auth0Client = await createAuth0Client({
-      domain: "othent.us.auth0.com",
-      clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
     });
-  
+
     let uint8Array;
-  
+
     if (typeof params.data === "string") {
-      const encoder = new TextEncoder();
-      uint8Array = encoder.encode(params.data);
+        const encoder = new TextEncoder();
+        uint8Array = encoder.encode(params.data);
     } else if (params.data instanceof Uint8Array) {
-      uint8Array = params.data;
+        uint8Array = params.data;
     } else if (params.data instanceof ArrayBuffer) {
-      uint8Array = new Uint8Array(params.data);
+        uint8Array = new Uint8Array(params.data);
     } else if (typeof params.data === "object") {
-      uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
+        uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
     } else {
-      throw new TypeError("Unsupported data type");
+        throw new TypeError("Unsupported data type");
     }
-  
+
     const file_hash = await sha256(uint8Array);
     const options = {
-      authorizationParams: {
-        transaction_input: JSON.stringify({
-          othentFunction: params.othentFunction,
-          file_hash: file_hash,
-        }),
-      },
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: params.othentFunction,
+                file_hash: file_hash,
+            }),
+        },
     };
     await auth0Client.loginWithPopup(options);
     const accessToken = await auth0Client.getTokenSilently({
-      detailedResponse: true,
+        detailedResponse: true,
     });
     const JWT = accessToken.id_token
     const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
 
-    if (decoded_JWT.contract_id) {
-        return { data: params.data, JWT: accessToken.id_token, tags: params.tags};
-    } else {
+    if (!decoded_JWT.contract_id) {
         throw new Error(`{success: false, message:"Please create a Othent account"}`)
     }
+    return { data: params.data, JWT: accessToken.id_token, tags: params.tags };
 
-  }
-  
+}
+
 
 
 
 // send transaction - Arweave
-export async function sendTransactionArweave(params: Types.SendTransactionArweaveProps) : Promise<Types.SendTransactionArweaveReturnProps> { 
-    
+export async function sendTransactionArweave(params: Types.SendTransactionArweaveProps): Promise<Types.SendTransactionArweaveReturnProps> {
+
     const data = params.data;
 
     const blob = new Blob([data])
@@ -336,18 +334,18 @@ export async function sendTransactionArweave(params: Types.SendTransactionArweav
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        return response.json();
-    })
-    .then(data => {
-        return data;
-    })
-    .catch(error => {
-        console.log(error);
-        throw error;
-    });
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            return data;
+        })
+        .catch(error => {
+            console.log(error);
+            throw error;
+        });
 
-    
+
 }
 
 
@@ -361,82 +359,81 @@ export async function sendTransactionArweave(params: Types.SendTransactionArweav
 export async function signTransactionBundlr(params: Types.SignTransactionBundlrProps): Promise<Types.SignTransactionBundlrReturnProps> {
 
     params.tags ??= [];
-  
+
     const auth0Client = await createAuth0Client({
-      domain: "othent.us.auth0.com",
-      clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
     });
-  
+
     let uint8Array;
-  
+
     if (typeof params.data === "string") {
-      const encoder = new TextEncoder();
-      uint8Array = encoder.encode(params.data);
+        const encoder = new TextEncoder();
+        uint8Array = encoder.encode(params.data);
     } else if (params.data instanceof Uint8Array) {
-      uint8Array = params.data;
+        uint8Array = params.data;
     } else if (params.data instanceof ArrayBuffer) {
-      uint8Array = new Uint8Array(params.data);
+        uint8Array = new Uint8Array(params.data);
     } else if (typeof params.data === "object") {
-      uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
+        uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
     } else {
-      throw new TypeError("Unsupported data type");
+        throw new TypeError("Unsupported data type");
     }
-  
+
     const file_hash = await sha256(uint8Array);
     const options = {
-      authorizationParams: {
-        transaction_input: JSON.stringify({
-          othentFunction: params.othentFunction,
-          file_hash: file_hash,
-        }),
-      },
+        authorizationParams: {
+            transaction_input: JSON.stringify({
+                othentFunction: params.othentFunction,
+                file_hash: file_hash,
+            }),
+        },
     };
     await auth0Client.loginWithPopup(options);
     const accessToken = await auth0Client.getTokenSilently({
-      detailedResponse: true,
+        detailedResponse: true,
     });
     const JWT = accessToken.id_token
     const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
 
-    if (decoded_JWT.contract_id) {
-        return { data: params.data, JWT: accessToken.id_token, tags: params.tags };
-    } else {
+    if (!decoded_JWT.contract_id) {
         throw new Error(`{success: false, message:"Please create a Othent account"}`)
     }
+    return { data: params.data, JWT: accessToken.id_token, tags: params.tags };
 
-  }
-  
+}
+
 
 
 
 // send transaction - bundlr
-export async function sendTransactionBundlr(params: Types.SendTransactionBundlrProps) : Promise<Types.SendTransactionBundlrReturnProps> { 
-    
+export async function sendTransactionBundlr(params: Types.SendTransactionBundlrProps): Promise<Types.SendTransactionBundlrReturnProps> {
+
     const data = params.data;
 
     const blob = new Blob([data]);
-  
+
     const formData = new FormData();
-  
+
     formData.append("file", blob);
     formData.append("dataHashJWT", params.JWT);
     formData.append("tags", JSON.stringify(params.tags));
-  
+
     return await fetch("https://server.othent.io/upload-data-bundlr", {
-      method: "POST",
-      body: formData,
+        method: "POST",
+        body: formData,
     })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        return data;
-      })
-      .catch((error) => {
-        console.log(error);
-        throw error;
-      });
-  }
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            return data;
+        })
+        .catch((error) => {
+            console.log(error);
+            throw error;
+        });
+}
 
 
 
@@ -446,7 +443,7 @@ export async function sendTransactionBundlr(params: Types.SendTransactionBundlrP
 
 
 // backup keyfile
-export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<Types.InitializeJWKReturnProps> {
+export async function initializeJWK(params: Types.InitializeJWKProps): Promise<Types.InitializeJWKReturnProps> {
 
     const auth0Client = await createAuth0Client({
         domain: "othent.us.auth0.com",
@@ -471,50 +468,50 @@ export async function initializeJWK(params: Types.InitializeJWKProps) : Promise<
         method: 'POST',
         url: 'https://server.othent.io/initialize-JWK',
         data: { PEM_key_JWT }
-      })
-      .then(response => {
-        return response.data;
     })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
 }
 
 
 
 // JWK backup transaction
-export async function JWKBackupTxn(params: Types.JWKBackupTxnProps) : Promise<Types.JWKBackupTxnReturnProps> {
+export async function JWKBackupTxn(params: Types.JWKBackupTxnProps): Promise<Types.JWKBackupTxnReturnProps> {
     return await axios({
         method: 'POST',
         url: 'https://server.othent.io/JWK-backup-transaction',
         data: { JWK_signed_JWT: params.JWK_signed_JWT }
-      })
-      .then(response => {
-        return response.data;
     })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
 }
 
 
 
 // Read custom contract
-export async function readCustomContract(params: Types.readCustomContractProps) : Promise<Types.readCustomContractReturnProps> {
+export async function readCustomContract(params: Types.readCustomContractProps): Promise<Types.readCustomContractReturnProps> {
     return await axios({
         method: 'POST',
         url: 'https://server.othent.io/read-custom-contract',
         data: { contract_id: params.contract_id }
-      })
-      .then(response => {
-        return response.data;
     })
-    .catch(error => {
-        console.log(error.response.data);
-        throw error;
-    });
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
 }
 
 
