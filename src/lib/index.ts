@@ -150,20 +150,7 @@ export async function userDetails(): Promise<Types.UserDetailsReturnProps | Type
         delete decoded_JWT.updated_at
         return decoded_JWT;
     } else {
-        return { 
-            success: false, 
-            message: 'Please create a Othent account',
-            contract_id: 'false',
-            given_name: 'false',
-            family_name: 'false',
-            nickname: 'false',
-            name: 'false',
-            picture: 'false',
-            locale: 'false',
-            email: 'false',
-            email_verified: 'false',
-            sub: 'false',
-        };
+        throw new Error(`{success: false, message:"Please create a Othent account"}`)
     }
 }
 
@@ -247,7 +234,7 @@ export async function signTransactionWarp(params: Types.SignTransactionWarpProps
     if (decoded_JWT.contract_id) {
         return {JWT: accessToken.id_token, tags: params.tags}
     } else {
-        return {success: false, message:"Please create a Othent account"}
+        throw new Error(`{success: false, message:"Please create a Othent account"}`)
     }
 
 }
@@ -324,7 +311,7 @@ export async function signTransactionArweave(params: Types.SignTransactionArweav
     if (decoded_JWT.contract_id) {
         return { data: params.data, JWT: accessToken.id_token, tags: params.tags};
     } else {
-        return {success: false, message:"Please create a Othent account"}
+        throw new Error(`{success: false, message:"Please create a Othent account"}`)
     }
 
   }
@@ -414,7 +401,7 @@ export async function signTransactionBundlr(params: Types.SignTransactionBundlrP
     if (decoded_JWT.contract_id) {
         return { data: params.data, JWT: accessToken.id_token, tags: params.tags };
     } else {
-        return {success: false, message:"Please create a Othent account"}
+        throw new Error(`{success: false, message:"Please create a Othent account"}`)
     }
 
   }
