@@ -23,12 +23,11 @@ jobs:
           envFile: .env
       - name: 📦 install dependencies
         run: npm install
-      - name: 📝 bump version
-        run: npm version patch
       - name: 📝 build
         run: npm run build
       - name: 🚀 publish
-        run: npm publish --access public
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+          
 
