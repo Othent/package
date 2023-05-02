@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
-import * as Types from '../types/index.js';
+import * as Types from '../types';
 
 
 

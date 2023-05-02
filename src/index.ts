@@ -1,6 +1,6 @@
 // Default export
-import * as othent from "./lib/index.js";
+import * as othent from "./lib";
 export default othent;
 
-export * from "./lib/index.js";
-export * from "./types/index.js";
+export * from "./lib";
+export * from "./types";
