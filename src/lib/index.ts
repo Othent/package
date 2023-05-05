@@ -56,7 +56,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
         throw new Error('Please specify a API Key and API ID (you can get one from Othent.io)')
     }
 
-    // instead add to server later
+    // instead add to server later, auth0 API ID in JWT ?
 
 
 
