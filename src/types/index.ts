@@ -1,3 +1,32 @@
+
+
+// useOthent
+export interface useOthentProps {
+    API_KEY: string,
+    API_ID: string
+}
+export interface useOthentReturnProps {
+    ping(): Promise<PingReturnProps>;
+    logIn(): Promise<LogInReturnProps>;
+    logOut(): Promise<LogOutReturnProps>;
+    userDetails(): Promise<UserDetailsReturnProps>;
+    readContract(): Promise<ReadContractReturnProps>;
+    signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps>;
+    sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps>;
+    signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps>;
+    sendTransactionArweave(params: SendTransactionArweaveProps): Promise<SendTransactionArweaveReturnProps>;
+    signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps>;
+    sendTransactionBundlr(params: SendTransactionBundlrProps): Promise<SendTransactionBundlrReturnProps>;
+    initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>;
+    JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>;
+    readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>
+  }
+
+
+
+
+
+
 // universal
 export interface DecodedJWT {
     contract_id: string,
@@ -26,6 +55,41 @@ export interface DecodedJWT {
 // ping
 export interface PingReturnProps {
     response: boolean;
+}
+
+
+
+
+
+// get API keys
+export interface getAPIKeysReturnProps {
+    API_KEY: string,
+    API_ID: string
+}
+
+
+
+// universal
+export interface API_KEY_JWT {
+    contract_id: string,
+    given_name: string,
+    family_name: string,
+    nickname: string,
+    name: string,
+    picture: string,
+    locale: string,
+    updated_at?: string,
+    email: string,
+    email_verified: string,
+    iss: string,
+    aud: string,
+    iat: number,
+    exp: number,
+    sub: string,
+    sid: string,
+    nonce: string
+    API_KEY: string,
+    API_ID: string
 }
 
 
