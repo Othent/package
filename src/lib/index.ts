@@ -6,43 +6,6 @@ import * as Types from '../types/index.js';
 
 
 
-
-// get API keys
-export async function getAPIKeys(): Promise<Types.getAPIKeysReturnProps> {
-    const auth0Client = await createAuth0Client({
-        domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-    });
-    const options = {
-        authorizationParams: {
-            transaction_input: JSON.stringify({
-                othentFunction: "APIKeys",
-            })
-        }
-    };
-    await auth0Client.loginWithPopup(options);
-    const accessToken = await auth0Client.getTokenSilently({
-        detailedResponse: true
-    });
-    const JWT = accessToken.id_token
-    const decoded_JWT: Types.API_KEY_JWT = jwt_decode(JWT)
-
-    if (decoded_JWT.contract_id) {
-        const API_KEY = decoded_JWT.API_KEY
-        const API_ID = decoded_JWT.API_ID
-        return { API_KEY: API_KEY, API_ID: API_ID }
-    } else {
-        throw new Error(`{success: false, message:"Please create a Othent account"}`)
-    }
-}
-
-
-
-
-
-
-
-
 // Othent
 export async function Othent(params: Types.useOthentProps): Promise<Types.useOthentReturnProps> {
     const API_KEY = params.API_KEY
@@ -57,6 +20,58 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
     }
 
 
+
+    // get API keys
+    async function getAPIKeys(): Promise<Types.getAPIKeysReturnProps> {
+        const auth0Client = await createAuth0Client({
+            domain: "othent.us.auth0.com",
+            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        });
+        const options = {
+            authorizationParams: {
+                transaction_input: JSON.stringify({
+                    othentFunction: "APIKeys",
+                })
+            }
+        };
+        await auth0Client.loginWithPopup(options);
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true
+        });
+        const JWT = accessToken.id_token
+        const decoded_JWT: Types.API_KEY_JWT = jwt_decode(JWT)
+
+        if (decoded_JWT.contract_id) {
+            const API_KEY = decoded_JWT.API_KEY
+            const API_ID = decoded_JWT.API_ID
+            return { API_KEY: API_KEY, API_ID: API_ID }
+        } else {
+            throw new Error(`{success: false, message:"Please create a Othent account"}`)
+        }
+    }
+
+
+
+    // add callback url
+    async function addCallbackURL(params: Types.addCallbackURLProps): Promise<Types.addCallbackURLReturnProps> {
+        
+        return await axios({
+            method: 'POST',
+            url: 'https://server.othent.io/add-callback-url',
+            data: {callbackURL: params.callbackURL}
+        })
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            throw error;
+        });
+
+    }     
+
+
+
+
     // ping server
     async function ping(): Promise<Types.PingReturnProps> {
         return await axios({
@@ -67,7 +82,6 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
                 return response.data;
             })
             .catch(error => {
-                console.log(error.response.data);
                 throw error;
             });
     }
@@ -165,7 +179,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
                 returnTo: window.location.origin
             }
         });
-        return { 'response': 'user logged out' }
+        return { response: 'user logged out' }
     }
 
 
@@ -567,7 +581,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
 
-    return { ping, logIn, logOut, userDetails, readContract, signTransactionWarp, sendTransactionWarp, signTransactionArweave, sendTransactionArweave, signTransactionBundlr, sendTransactionBundlr, initializeJWK, JWKBackupTxn, readCustomContract }
+    return { getAPIKeys, addCallbackURL, ping, logIn, logOut, userDetails, readContract, signTransactionWarp, sendTransactionWarp, signTransactionArweave, sendTransactionArweave, signTransactionBundlr, sendTransactionBundlr, initializeJWK, JWKBackupTxn, readCustomContract }
 
 
 }
@@ -575,4 +589,4 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
 
-export default { Othent, getAPIKeys };
+export default { Othent };

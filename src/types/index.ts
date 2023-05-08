@@ -6,6 +6,8 @@ export interface useOthentProps {
     API_ID: string
 }
 export interface useOthentReturnProps {
+    getAPIKeys(): Promise<getAPIKeysReturnProps>;
+    addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps>;
     ping(): Promise<PingReturnProps>;
     logIn(): Promise<LogInReturnProps>;
     logOut(): Promise<LogOutReturnProps>;
@@ -50,26 +52,11 @@ export interface DecodedJWT {
 
 
 
-
-
-// ping
-export interface PingReturnProps {
-    response: boolean;
-}
-
-
-
-
-
 // get API keys
 export interface getAPIKeysReturnProps {
     API_KEY: string,
     API_ID: string
 }
-
-
-
-// universal
 export interface API_KEY_JWT {
     contract_id: string,
     given_name: string,
@@ -91,6 +78,25 @@ export interface API_KEY_JWT {
     API_KEY: string,
     API_ID: string
 }
+
+
+
+export interface addCallbackURLProps {
+    callbackURL: string
+}
+export interface addCallbackURLReturnProps {
+    response: boolean,
+    message: string
+}
+
+
+
+
+// ping
+export interface PingReturnProps {
+    response: boolean;
+}
+
 
 
 
