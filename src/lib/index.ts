@@ -8,15 +8,14 @@ import * as Types from '../types/index.js';
 
 // Othent
 export async function Othent(params: Types.useOthentProps): Promise<Types.useOthentReturnProps> {
-    const API_KEY = params.API_KEY
     const API_ID = params.API_ID
     const API_valid = await axios({
         method: 'POST',
         url: 'https://server.othent.io/use-othent',
-        data: { API_KEY, API_ID }
+        data: { API_ID }
     })
     if (!API_valid.data === true) {
-        throw new Error('Please specify a API Key and API ID (you can get one from Othent.io)')
+        throw new Error('Please specify a API ID (you can get one from Othent.io)')
     }
 
 
@@ -202,6 +201,8 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
             detailedResponse: true
         });
         const JWT = accessToken.id_token
+        
+        console.log(jwt_decode(accessToken.access_token))
         const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
         if (decoded_JWT.contract_id) {
             delete decoded_JWT.nonce

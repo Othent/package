@@ -2,7 +2,6 @@
 
 // useOthent
 export interface useOthentProps {
-    API_KEY: string,
     API_ID: string
 }
 export interface useOthentReturnProps {
