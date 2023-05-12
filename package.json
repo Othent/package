@@ -1,11 +1,11 @@
 {
   "name": "othent",
-  "version": "1.0.58",
+  "version": "1.0.59",
   "description": "Merging Web2 to Web3 user logins with a familiar and simple interface",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -18,7 +18,7 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
+    "build": "rm -rf ./dist && rollup -c && dts-bundle-generator src/index.ts -o dist/types/index.d.ts --no-banner",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,6 +38,15 @@
     "jwt-decode": "^3.1.2"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.1.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-terser": "^0.4.1",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "dts-bundle-generator": "^8.0.1",
+    "rollup": "^3.21.6",
+    "rollup-plugin-dts": "^5.3.0",
+    "tslib": "^2.5.0",
     "typescript": "^5.0.4"
   }
 }

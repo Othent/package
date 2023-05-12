@@ -2,12 +2,43 @@ import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
-import * as Types from '../types/index.js';
+import {
+  API_KEY_JWT,
+  DecodedJWT,
+  InitializeJWKProps,
+  InitializeJWKReturnProps,
+  JWKBackupTxnProps,
+  JWKBackupTxnReturnProps,
+  LogInReturnProps,
+  LogOutReturnProps,
+  PingReturnProps,
+  ReadContractReturnProps,
+  SendTransactionArweaveProps,
+  SendTransactionArweaveReturnProps,
+  SendTransactionBundlrProps,
+  SendTransactionBundlrReturnProps,
+  SendTransactionWarpProps,
+  SendTransactionWarpReturnProps,
+  SignTransactionArweaveProps,
+  SignTransactionArweaveReturnProps,
+  SignTransactionBundlrProps,
+  SignTransactionBundlrReturnProps,
+  SignTransactionWarpProps,
+  SignTransactionWarpReturnProps,
+  UserDetailsReturnProps,
+  addCallbackURLProps,
+  addCallbackURLReturnProps,
+  getAPIKeysReturnProps,
+  readCustomContractProps,
+  readCustomContractReturnProps,
+  useOthentProps,
+  useOthentReturnProps,
+} from "../types/index.js";
 
 
 
 // Othent
-export async function Othent(params: Types.useOthentProps): Promise<Types.useOthentReturnProps> {
+export async function Othent(params: useOthentProps): Promise<useOthentReturnProps> {
     const API_ID = params.API_ID;
     return axios({
         method: 'POST',
@@ -21,7 +52,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // get API keys
-    async function getAPIKeys(): Promise<Types.getAPIKeysReturnProps> {
+    async function getAPIKeys(): Promise<getAPIKeysReturnProps> {
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -38,7 +69,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
             detailedResponse: true
         });
         const JWT = accessToken.id_token
-        const decoded_JWT: Types.API_KEY_JWT = jwt_decode(JWT)
+        const decoded_JWT: API_KEY_JWT = jwt_decode(JWT)
 
         if (decoded_JWT.contract_id) {
             const API_KEY = decoded_JWT.API_KEY
@@ -52,7 +83,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // add callback url
-    async function addCallbackURL(params: Types.addCallbackURLProps): Promise<Types.addCallbackURLReturnProps> {
+    async function addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps> {
         
         return await axios({
             method: 'POST',
@@ -72,7 +103,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // ping server
-    async function ping(): Promise<Types.PingReturnProps> {
+    async function ping(): Promise<PingReturnProps> {
         return await axios({
             method: 'GET',
             url: 'https://server.othent.io/',
@@ -88,7 +119,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // log in
-    async function logIn(): Promise<Types.LogInReturnProps> {
+    async function logIn(): Promise<LogInReturnProps> {
 
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
@@ -97,7 +128,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
         const isAuthenticated = await auth0Client.isAuthenticated();
         if (isAuthenticated) {
-            return await userDetails() as Types.UserDetailsReturnProps
+            return await userDetails() as UserDetailsReturnProps
         } else {
             const options = {
                 authorizationParams: {
@@ -112,7 +143,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
                 detailedResponse: true
             });
             const JWT = accessToken.id_token;
-            let decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+            let decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
             if (decoded_JWT.contract_id) {
 
@@ -168,7 +199,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // log out
-    async function logOut(): Promise<Types.LogOutReturnProps> {
+    async function logOut(): Promise<LogOutReturnProps> {
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -184,7 +215,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
 
-    async function userDetails(): Promise<Types.UserDetailsReturnProps> {
+    async function userDetails(): Promise<UserDetailsReturnProps> {
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -201,7 +232,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
             detailedResponse: true
         });
         const JWT = accessToken.id_token
-        const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+        const decoded_JWT: DecodedJWT = jwt_decode(JWT)
         if (decoded_JWT.contract_id) {
             delete decoded_JWT.nonce
             delete decoded_JWT.sid
@@ -221,7 +252,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // read contract
-    async function readContract(): Promise<Types.ReadContractReturnProps> {
+    async function readContract(): Promise<ReadContractReturnProps> {
 
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
@@ -259,7 +290,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // sign transaction warp
-    async function signTransactionWarp(params: Types.SignTransactionWarpProps): Promise<Types.SignTransactionWarpReturnProps> {
+    async function signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps> {
 
         params.tags ??= []
 
@@ -291,7 +322,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
         });
 
         const JWT = accessToken.id_token
-        const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+        const decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
         if (!decoded_JWT.contract_id) {
             throw new Error(`{success: false, message:"Please create a Othent account"}`)
@@ -304,7 +335,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // send transaction - Warp
-    async function sendTransactionWarp(params: Types.SendTransactionWarpProps): Promise<Types.SendTransactionWarpReturnProps> {
+    async function sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps> {
 
         const JWT = params.JWT
         const tags = params.tags
@@ -329,7 +360,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // sign transaction arweave
-    async function signTransactionArweave(params: Types.SignTransactionArweaveProps): Promise<Types.SignTransactionArweaveReturnProps> {
+    async function signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps> {
 
         params.tags ??= [];
 
@@ -367,7 +398,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
             detailedResponse: true,
         });
         const JWT = accessToken.id_token
-        const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+        const decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
         if (!decoded_JWT.contract_id) {
             throw new Error(`{success: false, message:"Please create a Othent account"}`)
@@ -380,7 +411,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // send transaction - Arweave
-    async function sendTransactionArweave(params: Types.SendTransactionArweaveProps): Promise<Types.SendTransactionArweaveReturnProps> {
+    async function sendTransactionArweave(params: SendTransactionArweaveProps): Promise<SendTransactionArweaveReturnProps> {
 
         const data = params.data;
 
@@ -418,7 +449,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // sign transaction - bundlr
-    async function signTransactionBundlr(params: Types.SignTransactionBundlrProps): Promise<Types.SignTransactionBundlrReturnProps> {
+    async function signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps> {
 
         params.tags ??= [];
 
@@ -456,7 +487,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
             detailedResponse: true,
         });
         const JWT = accessToken.id_token
-        const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
+        const decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
         if (!decoded_JWT.contract_id) {
             throw new Error(`{success: false, message:"Please create a Othent account"}`)
@@ -469,7 +500,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // send transaction - bundlr
-    async function sendTransactionBundlr(params: Types.SendTransactionBundlrProps): Promise<Types.SendTransactionBundlrReturnProps> {
+    async function sendTransactionBundlr(params: SendTransactionBundlrProps): Promise<SendTransactionBundlrReturnProps> {
 
         const data = params.data;
 
@@ -505,7 +536,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // backup keyfile
-    async function initializeJWK(params: Types.InitializeJWKProps): Promise<Types.InitializeJWKReturnProps> {
+    async function initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps> {
 
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
@@ -543,7 +574,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // JWK backup transaction
-    async function JWKBackupTxn(params: Types.JWKBackupTxnProps): Promise<Types.JWKBackupTxnReturnProps> {
+    async function JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps> {
         return await axios({
             method: 'POST',
             url: 'https://server.othent.io/JWK-backup-transaction',
@@ -561,7 +592,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     // Read custom contract
-    async function readCustomContract(params: Types.readCustomContractProps): Promise<Types.readCustomContractReturnProps> {
+    async function readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps> {
         return await axios({
             method: 'POST',
             url: 'https://server.othent.io/read-custom-contract',
