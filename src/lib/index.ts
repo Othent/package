@@ -8,16 +8,16 @@ import * as Types from '../types/index.js';
 
 // Othent
 export async function Othent(params: Types.useOthentProps): Promise<Types.useOthentReturnProps> {
-    const API_ID = params.API_ID
-    const API_valid = await axios({
+    const API_ID = params.API_ID;
+    return axios({
         method: 'POST',
         url: 'https://server.othent.io/use-othent',
         data: { API_ID }
     })
-    if (!API_valid.data === true) {
-        throw new Error('Please specify a API ID (you can get one from Othent.io)')
-    }
-
+    .then((API_valid) => {
+        if (API_valid.data.success === false) {
+            throw new Error('Please specify an API ID (you can get one from Othent.io)');
+        }
 
 
     // get API keys
@@ -580,12 +580,36 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
 
-    return { getAPIKeys, addCallbackURL, ping, logIn, logOut, userDetails, readContract, signTransactionWarp, sendTransactionWarp, signTransactionArweave, sendTransactionArweave, signTransactionBundlr, sendTransactionBundlr, initializeJWK, JWKBackupTxn, readCustomContract }
+
+
+    return {
+        getAPIKeys,
+        addCallbackURL,
+        ping,
+        logIn,
+        logOut,
+        userDetails,
+        readContract,
+        signTransactionWarp,
+        sendTransactionWarp,
+        signTransactionArweave,
+        sendTransactionArweave,
+        signTransactionBundlr,
+        sendTransactionBundlr,
+        initializeJWK,
+        JWKBackupTxn,
+        readCustomContract
+    };
+
+})
+    
+    .catch((error) => {
+        console.error('An error occurred:', error);
+        throw error;
+    });
 
 
 }
-
-
 
 
 export default { Othent };

@@ -5,25 +5,24 @@ export interface useOthentProps {
     API_ID: string
 }
 export interface useOthentReturnProps {
-    getAPIKeys(): Promise<getAPIKeysReturnProps>;
-    addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps>;
-    ping(): Promise<PingReturnProps>;
-    logIn(): Promise<LogInReturnProps>;
-    logOut(): Promise<LogOutReturnProps>;
-    userDetails(): Promise<UserDetailsReturnProps>;
-    readContract(): Promise<ReadContractReturnProps>;
-    signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps>;
-    sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps>;
-    signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps>;
-    sendTransactionArweave(params: SendTransactionArweaveProps): Promise<SendTransactionArweaveReturnProps>;
-    signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps>;
-    sendTransactionBundlr(params: SendTransactionBundlrProps): Promise<SendTransactionBundlrReturnProps>;
-    initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>;
-    JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>;
-    readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>
+    getAPIKeys(): Promise<getAPIKeysReturnProps>,
+    addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps>,
+    ping(): Promise<PingReturnProps>,
+    logIn(): Promise<LogInReturnProps>,
+    logOut(): Promise<LogOutReturnProps>,
+    userDetails(): Promise<UserDetailsReturnProps>,
+    readContract(): Promise<ReadContractReturnProps>,
+    signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps>,
+    sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps>,
+    signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps>,
+    sendTransactionArweave(params: SendTransactionArweaveProps): Promise<SendTransactionArweaveReturnProps>,
+    signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps>,
+    sendTransactionBundlr(params: SendTransactionBundlrProps): Promise<SendTransactionBundlrReturnProps>,
+    initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>,
+    JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>,
+    readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
   }
-
-
+  
 
 
 
