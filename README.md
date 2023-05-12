@@ -10,8 +10,11 @@ npm i othent
 ## Usage
 To use the library, you can import it into your project:
 ```javascript
+
 import Othent from 'othent';
-const othent = Othent({ API_ID })
+
+const othent = Othent({ API_ID });
+
 ```
 
 ## Documentation
