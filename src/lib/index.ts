@@ -201,8 +201,6 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
             detailedResponse: true
         });
         const JWT = accessToken.id_token
-        
-        console.log(jwt_decode(accessToken.access_token))
         const decoded_JWT: Types.DecodedJWT = jwt_decode(JWT)
         if (decoded_JWT.contract_id) {
             delete decoded_JWT.nonce
