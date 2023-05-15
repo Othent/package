@@ -15,6 +15,7 @@
     "LICENSE",
     "package.json",
     "README.md",
+    "rollup.config.js",
     "tsconfig.json"
   ],
   "scripts": {
