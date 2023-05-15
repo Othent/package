@@ -3,9 +3,9 @@
   "version": "1.0.59",
   "description": "Merging Web2 to Web3 user logins with a familiar and simple interface",
   "type": "module",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -19,7 +19,7 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && rollup -c && dts-bundle-generator src/index.ts -o dist/types/index.d.ts --no-banner",
+    "build": "rm -rf ./dist && rollup -c && dts-bundle-generator src/index.ts -o dist/index.d.ts --no-banner",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
