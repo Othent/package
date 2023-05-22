@@ -20,8 +20,8 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
         }
 
 
-    // get API keys
-    async function getAPIKeys(): Promise<Types.getAPIKeysReturnProps> {
+    // get API ID
+    async function getAPIID(): Promise<Types.getAPIIDReturnProps> {
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -29,7 +29,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
         const options = {
             authorizationParams: {
                 transaction_input: JSON.stringify({
-                    othentFunction: "APIKeys",
+                    othentFunction: "API_ID",
                 })
             }
         };
@@ -38,12 +38,10 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
             detailedResponse: true
         });
         const JWT = accessToken.id_token
-        const decoded_JWT: Types.API_KEY_JWT = jwt_decode(JWT)
+        const decoded_JWT: Types.API_ID_JWT = jwt_decode(JWT)
 
         if (decoded_JWT.contract_id) {
-            const API_KEY = decoded_JWT.API_KEY
-            const API_ID = decoded_JWT.API_ID
-            return { API_KEY: API_KEY, API_ID: API_ID }
+            return { API_ID: decoded_JWT.API_ID }
         } else {
             throw new Error(`{success: false, message:"Please create a Othent account"}`)
         }
@@ -130,7 +128,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
                 return await axios({
                     method: 'POST',
                     url: 'https://server.othent.io/create-user',
-                    data: { JWT }
+                    data: { JWT, API_ID }
                 })
                     .then(response => {
                         const new_user_details = response.data
@@ -311,7 +309,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
         return await axios({
             method: 'POST',
             url: 'https://server.othent.io/send-transaction',
-            data: { JWT, tags }
+            data: { JWT, tags, API_ID }
         })
             .then(response => {
                 return response.data;
@@ -390,11 +388,13 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
         formData.append('file', blob);
         formData.append('dataHashJWT', params.JWT);
+        formData.append('API_ID', API_ID);
         formData.append('tags', JSON.stringify(params.tags));
 
         return await fetch('https://server.othent.io/upload-data-arweave', {
             method: 'POST',
             body: formData
+            
         })
             .then(response => {
                 return response.json();
@@ -479,6 +479,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
         formData.append("file", blob);
         formData.append("dataHashJWT", params.JWT);
+        formData.append("API_ID", API_ID);
         formData.append("tags", JSON.stringify(params.tags));
 
         return await fetch("https://server.othent.io/upload-data-bundlr", {
@@ -529,7 +530,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
         return await axios({
             method: 'POST',
             url: 'https://server.othent.io/initialize-JWK',
-            data: { PEM_key_JWT }
+            data: { PEM_key_JWT, API_ID }
         })
             .then(response => {
                 return response.data;
@@ -547,7 +548,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
         return await axios({
             method: 'POST',
             url: 'https://server.othent.io/JWK-backup-transaction',
-            data: { JWK_signed_JWT: params.JWK_signed_JWT }
+            data: { JWK_signed_JWT: params.JWK_signed_JWT, API_ID }
         })
             .then(response => {
                 return response.data;
@@ -583,7 +584,7 @@ export async function Othent(params: Types.useOthentProps): Promise<Types.useOth
 
 
     return {
-        getAPIKeys,
+        getAPIID,
         addCallbackURL,
         ping,
         logIn,
