@@ -3,7 +3,7 @@ import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 import {
-  API_KEY_JWT,
+  API_ID_JWT,
   DecodedJWT,
   InitializeJWKProps,
   InitializeJWKReturnProps,
@@ -28,7 +28,7 @@ import {
   UserDetailsReturnProps,
   addCallbackURLProps,
   addCallbackURLReturnProps,
-  getAPIKeysReturnProps,
+  getAPIIDReturnProps,
   readCustomContractProps,
   readCustomContractReturnProps,
   useOthentProps,
@@ -52,7 +52,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
     // get API keys
-    async function getAPIKeys(): Promise<Types.getAPIKeysReturnProps> {
+    async function getAPIID(): Promise<getAPIIDReturnProps> {
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
@@ -69,7 +69,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             detailedResponse: true
         });
         const JWT = accessToken.id_token
-        const decoded_JWT: Types.API_KEY_JWT = jwt_decode(JWT)
+        const decoded_JWT: API_ID_JWT = jwt_decode(JWT)
 
         if (decoded_JWT.contract_id) {
             return { API_ID: decoded_JWT.API_ID }
