@@ -273,7 +273,7 @@ export interface JWKBackupTxnProps {
     JWK_signed_JWT: string
 }
 export interface JWKBackupTxnReturnProps {
-    success: boolean,
+    validity: boolean,
     transactionId: string,
 }
 
