@@ -5,7 +5,6 @@ import { sha256 } from 'crypto-hash';
 import {
   API_ID_JWT,
   DecodedJWT,
-  InitializeJWKProps,
   InitializeJWKReturnProps,
   JWKBackupTxnProps,
   JWKBackupTxnReturnProps,
@@ -537,32 +536,38 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
     // backup keyfile
-    async function initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps> {
-
+    async function initializeJWK(): Promise<InitializeJWKReturnProps> {
         const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+          domain: "othent.us.auth0.com",
+          clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
         });
-
-        const options = {
-            authorizationParams: {
-                transaction_input: JSON.stringify({
+      
+        let JWK_public_key = null;
+        const arweaveWallet = await window.arweaveWallet;
+        await arweaveWallet.connect(["ACCESS_PUBLIC_KEY"]);
+        const activePublicKey = await arweaveWallet.getActiveAddress();
+        JWK_public_key = activePublicKey;
+    
+        if (JWK_public_key !== null) {
+            const options = {
+                authorizationParams: {
+                    transaction_input: JSON.stringify({
                     othentFunction: 'initializeJWK',
-                    warpData: { function: 'initializeJWK', data: { JWK_public_key: params.JWK_public_key } },
-                })
-            }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
-        });
-        const PEM_key_JWT = accessToken.id_token;
-
-        return await axios({
-            method: 'POST',
-            url: 'https://server.othent.io/initialize-JWK',
-            data: { PEM_key_JWT, API_ID }
-        })
+                    warpData: { function: 'initializeJWK', data: { JWK_public_key } },
+                    })
+                }
+            };
+            await auth0Client.loginWithPopup(options);
+            const accessToken = await auth0Client.getTokenSilently({
+                detailedResponse: true
+            });
+            const PEM_key_JWT = accessToken.id_token;
+        
+            return axios({
+                method: 'POST',
+                url: 'https://server.othent.io/initialize-JWK',
+                data: { PEM_key_JWT, API_ID }
+            })
             .then(response => {
                 return response.data;
             })
@@ -570,7 +575,11 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                 console.log(error.response.data);
                 throw error;
             });
+        } else {
+          throw new Error('JWK_public_key is not available');
+        }
     }
+      
 
 
 

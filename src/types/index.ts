@@ -18,7 +18,7 @@ export interface useOthentReturnProps {
     sendTransactionArweave(params: SendTransactionArweaveProps): Promise<SendTransactionArweaveReturnProps>,
     signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps>,
     sendTransactionBundlr(params: SendTransactionBundlrProps): Promise<SendTransactionBundlrReturnProps>,
-    initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>,
+    initializeJWK(): Promise<InitializeJWKReturnProps>,
     JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>,
     readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
   }
@@ -258,8 +258,10 @@ export interface SignTransactionBundlrProps {
 
 
 // backup keyfile
-export interface InitializeJWKProps {
-    JWK_public_key: string
+declare global {
+    interface Window {
+        arweaveWallet?: any;
+    }
 }
 export interface InitializeJWKReturnProps {
     success: boolean,
