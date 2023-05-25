@@ -3,7 +3,6 @@ import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 import jwkToPem from 'jwk-to-pem';
-import { getAddress } from 'permawebjs/wallet'
 import { KJUR } from 'jsrsasign';
 import {
     API_ID_JWT,
@@ -547,16 +546,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         const key = JSON.stringify(privateKey)
         const key1 = JSON.parse(key)
 
-        let JWK_public_key
-        try {
-
-            JWK_public_key = await getAddress({  environment: 'mainnet', key: key1 });
-            console.log(JWK_public_key)
-
-        } catch (e) {}
-        
+        const JWK_public_key = null
         const JWK_public_key_PEM = jwkToPem(key1);
-        console.log(JWK_public_key_PEM)
 
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
