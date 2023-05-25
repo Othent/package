@@ -542,7 +542,6 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
     async function initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps> {
       
         const privateKey = params.privateKey
-        console.log(privateKey)
         const key = JSON.stringify(privateKey)
         const key1 = JSON.parse(key)
 
@@ -605,7 +604,6 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         const header = { alg: 'RS256', typ: 'JWT', exp: Math.floor(Date.now() / 1000) + (60 * 60) };
         const JWK_signed_JWT = KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(payload), privatePem);
-        console.log(JWK_signed_JWT)
 
         return await axios({
             method: 'POST',
