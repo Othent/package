@@ -18,5 +18,5 @@ export default {
     }),
     terser(),
   ],
-  external: ["axios", "@auth0/auth0-spa-js", "jwt-decode", "crypto-hash"],
+  external: ["axios", "@auth0/auth0-spa-js", "jwt-decode", "crypto-hash", "jwk-to-pem", "permawebjs/wallet", "jsrsasign"],
 };

@@ -2,37 +2,41 @@ import axios from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
+import jwkToPem from 'jwk-to-pem';
+import { getAddress } from 'permawebjs/wallet'
+import { KJUR } from 'jsrsasign';
 import {
-  API_ID_JWT,
-  DecodedJWT,
-  InitializeJWKReturnProps,
-  JWKBackupTxnProps,
-  JWKBackupTxnReturnProps,
-  LogInReturnProps,
-  LogOutReturnProps,
-  PingReturnProps,
-  ReadContractReturnProps,
-  SendTransactionArweaveProps,
-  SendTransactionArweaveReturnProps,
-  SendTransactionBundlrProps,
-  SendTransactionBundlrReturnProps,
-  SendTransactionWarpProps,
-  SendTransactionWarpReturnProps,
-  SignTransactionArweaveProps,
-  SignTransactionArweaveReturnProps,
-  SignTransactionBundlrProps,
-  SignTransactionBundlrReturnProps,
-  SignTransactionWarpProps,
-  SignTransactionWarpReturnProps,
-  UserDetailsReturnProps,
-  addCallbackURLProps,
-  addCallbackURLReturnProps,
-  getAPIIDReturnProps,
-  readCustomContractProps,
-  readCustomContractReturnProps,
-  useOthentProps,
-  useOthentReturnProps,
-} from "../types/index.js";
+    API_ID_JWT,
+    DecodedJWT,
+    InitializeJWKProps,
+    InitializeJWKReturnProps,
+    JWKBackupTxnProps,
+    JWKBackupTxnReturnProps,
+    LogInReturnProps,
+    LogOutReturnProps,
+    PingReturnProps,
+    ReadContractReturnProps,
+    SendTransactionArweaveProps,
+    SendTransactionArweaveReturnProps,
+    SendTransactionBundlrProps,
+    SendTransactionBundlrReturnProps,
+    SendTransactionWarpProps,
+    SendTransactionWarpReturnProps,
+    SignTransactionArweaveProps,
+    SignTransactionArweaveReturnProps,
+    SignTransactionBundlrProps,
+    SignTransactionBundlrReturnProps,
+    SignTransactionWarpProps,
+    SignTransactionWarpReturnProps,
+    UserDetailsReturnProps,
+    addCallbackURLProps,
+    addCallbackURLReturnProps,
+    getAPIIDReturnProps,
+    readCustomContractProps,
+    readCustomContractReturnProps,
+    useOthentProps,
+    useOthentReturnProps,
+  } from "../types/index.js";
 
 
 
@@ -536,48 +540,55 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
     // backup keyfile
-    async function initializeJWK(): Promise<InitializeJWKReturnProps> {
-        const auth0Client = await createAuth0Client({
-          domain: "othent.us.auth0.com",
-          clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-        });
+    async function initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps> {
       
-        let JWK_public_key = null;
-        const arweaveWallet = await window.arweaveWallet;
-        await arweaveWallet.connect(["ACCESS_PUBLIC_KEY"]);
-        const activePublicKey = await arweaveWallet.getActiveAddress();
-        JWK_public_key = activePublicKey;
-    
-        if (JWK_public_key !== null) {
-            const options = {
-                authorizationParams: {
-                    transaction_input: JSON.stringify({
-                    othentFunction: 'initializeJWK',
-                    warpData: { function: 'initializeJWK', data: { JWK_public_key } },
-                    })
-                }
-            };
-            await auth0Client.loginWithPopup(options);
-            const accessToken = await auth0Client.getTokenSilently({
-                detailedResponse: true
-            });
-            const PEM_key_JWT = accessToken.id_token;
+        const privateKey = params.privateKey
+        console.log(privateKey)
+        const key = JSON.stringify(privateKey)
+        const key1 = JSON.parse(key)
+
+        let JWK_public_key
+        try {
+
+            JWK_public_key = await getAddress({  environment: 'mainnet', key: key1 });
+            console.log(JWK_public_key)
+
+        } catch (e) {}
         
-            return axios({
-                method: 'POST',
-                url: 'https://server.othent.io/initialize-JWK',
-                data: { PEM_key_JWT, API_ID }
-            })
-            .then(response => {
-                return response.data;
-            })
-            .catch(error => {
-                console.log(error.response.data);
-                throw error;
-            });
-        } else {
-          throw new Error('JWK_public_key is not available');
-        }
+        const JWK_public_key_PEM = jwkToPem(key1);
+        console.log(JWK_public_key_PEM)
+
+        const auth0Client = await createAuth0Client({
+            domain: "othent.us.auth0.com",
+            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        });
+
+        const options = {
+            authorizationParams: {
+                transaction_input: JSON.stringify({
+                othentFunction: 'initializeJWK',
+                warpData: { function: 'initializeJWK', data: { JWK_public_key_PEM, JWK_public_key } },
+                })
+            }
+        };
+        await auth0Client.loginWithPopup(options);
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true
+        });
+        const PEM_key_JWT = accessToken.id_token;
+    
+        return axios({
+            method: 'POST',
+            url: 'https://server.othent.io/initialize-JWK',
+            data: { PEM_key_JWT, API_ID }
+        })
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.log(error.response.data);
+            throw error;
+        });
     }
       
 
@@ -585,10 +596,30 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
     // JWK backup transaction
     async function JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps> {
+
+        const payload = {
+            iat: Math.floor(Date.now() / 1000),
+            sub: params.sub,
+            contract_id: params.contract_id,
+            tags: params.tags,
+            contract_input: {
+                data: params.data,
+                othentFunction: params.othentFunction
+                },
+        };
+
+        const privateKey = params.privateKey
+        const privatePem = jwkToPem(privateKey, { private: true });
+
+
+        const header = { alg: 'RS256', typ: 'JWT', exp: Math.floor(Date.now() / 1000) + (60 * 60) };
+        const JWK_signed_JWT = KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(payload), privatePem);
+        console.log(JWK_signed_JWT)
+
         return await axios({
             method: 'POST',
             url: 'https://server.othent.io/JWK-backup-transaction',
-            data: { JWK_signed_JWT: params.JWK_signed_JWT, API_ID }
+            data: { JWK_signed_JWT, API_ID }
         })
             .then(response => {
                 return response.data;
