@@ -59,16 +59,15 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
         });
-        const options = {
+
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: 'off',
             authorizationParams: {
                 transaction_input: JSON.stringify({
                     othentFunction: "API_ID",
                 })
             }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
         });
         const JWT = accessToken.id_token
         const decoded_JWT: API_ID_JWT = jwt_decode(JWT)
@@ -220,16 +219,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
         });
-        const options = {
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: 'off',
             authorizationParams: {
                 transaction_input: JSON.stringify({
                     othentFunction: "idToken",
                 })
             }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
         });
         const JWT = accessToken.id_token
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
@@ -258,16 +255,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             domain: "othent.us.auth0.com",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
         });
-        const options = {
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: 'off',
             authorizationParams: {
                 transaction_input: JSON.stringify({
                     othentFunction: "idToken",
                 })
             }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
         });
         const JWT = accessToken.id_token;
 
@@ -308,17 +303,15 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             }
         }
 
-        const options = {
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: 'off',
             authorizationParams: {
                 transaction_input: JSON.stringify({
                     othentFunction: params.othentFunction,
                     warpData: warpData,
                 })
             }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
         });
 
         const JWT = accessToken.id_token
@@ -385,17 +378,15 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
         const file_hash = await sha256(uint8Array);
-        const options = {
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: 'off',
             authorizationParams: {
                 transaction_input: JSON.stringify({
                     othentFunction: params.othentFunction,
                     file_hash: file_hash,
                 }),
-            },
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
+            }
         });
         const JWT = accessToken.id_token
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
@@ -476,17 +467,15 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
         const file_hash = await sha256(uint8Array);
-        const options = {
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: 'off',
             authorizationParams: {
                 transaction_input: JSON.stringify({
                     othentFunction: params.othentFunction,
                     file_hash: file_hash,
                 }),
-            },
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
+            }
         });
         const JWT = accessToken.id_token
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
@@ -553,17 +542,15 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
         });
 
-        const options = {
+        const accessToken = await auth0Client.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: 'off',
             authorizationParams: {
                 transaction_input: JSON.stringify({
                 othentFunction: 'initializeJWK',
                 warpData: { function: 'initializeJWK', data: { JWK_public_key_PEM, JWK_public_key } },
                 })
             }
-        };
-        await auth0Client.loginWithPopup(options);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true
         });
         const PEM_key_JWT = accessToken.id_token;
     
