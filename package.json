@@ -46,6 +46,7 @@
     "@rollup/plugin-typescript": "^11.1.0",
     "@types/jsrsasign": "^10.5.8",
     "@types/jwk-to-pem": "^2.0.1",
+    "@types/node": "^20.2.5",
     "dts-bundle-generator": "^8.0.1",
     "rollup": "^3.21.6",
     "tslib": "^2.5.0",

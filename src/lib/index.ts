@@ -541,12 +541,11 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
     // backup keyfile
     async function initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps> {
       
-        const privateKey = params.privateKey
-        const key = JSON.stringify(privateKey)
-        const key1 = JSON.parse(key)
+        const key = JSON.stringify(params.privateKey)
+        const jwk = JSON.parse(key)
 
-        const JWK_public_key = null
-        const JWK_public_key_PEM = jwkToPem(key1);
+        const JWK_public_key = null // waiting on Ar-js
+        const JWK_public_key_PEM = jwkToPem(jwk);
 
         const auth0Client = await createAuth0Client({
             domain: "othent.us.auth0.com",
