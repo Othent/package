@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createAuth0Client } from '@auth0/auth0-spa-js';
+import { Auth0Client, createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 import jwkToPem from 'jwk-to-pem';
@@ -30,6 +30,7 @@ import {
     UserDetailsReturnProps,
     addCallbackURLProps,
     addCallbackURLReturnProps,
+    CustomAuthParams,
     getAPIIDReturnProps,
     readCustomContractProps,
     readCustomContractReturnProps,
@@ -46,29 +47,46 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         method: 'POST',
         url: 'https://server.othent.io/use-othent',
         data: { API_ID }
-    })
-    .then((API_valid) => {
+    }).then((API_valid) => {
+
         if (API_valid.data.success === false) {
             throw new Error('Please specify an API ID (you can get one from Othent.io)');
         }
 
 
+    // helpers
+    const getAuth0Client = () => createAuth0Client({
+        domain: "othent.us.auth0.com",
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+    });
+
+    function getTokenSilently(auth0: Auth0Client, authParams: CustomAuthParams) {
+        return auth0.getTokenSilently({
+            detailedResponse: true,
+            cacheMode: "off", 
+            authorizationParams: authParams
+        })
+    }
+
+    function filterDecodedJWTProps(jwt: DecodedJWT) {
+        delete jwt.nonce
+        delete jwt.sid
+        delete jwt.aud
+        delete jwt.iss
+        delete jwt.iat
+        delete jwt.exp
+        delete jwt.updated_at
+        return jwt
+    }
+
+
     // get API keys
     async function getAPIID(): Promise<getAPIIDReturnProps> {
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-        });
+        const auth0 = await getAuth0Client()
 
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
-            cacheMode: 'off',
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: "API_ID",
-                })
-            }
-        });
+        const authParams = { transaction_input: JSON.stringify({ othentFunction: "API_ID" }) }
+        const accessToken = await getTokenSilently(auth0, authParams)
+
         const JWT = accessToken.id_token
         const decoded_JWT: API_ID_JWT = jwt_decode(JWT)
 
@@ -116,16 +134,16 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
     }
 
 
-
     // log in
-    async function logIn(): Promise<LogInReturnProps> {
+    async function logIn(): Promise<void | LogInReturnProps> {
+        const auth0 = await getAuth0Client()
+        let isAuthenticated = false
+        try {
+            isAuthenticated = await auth0.isAuthenticated();
+        } catch (err) {
+            console.log(err);
+        }
 
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        });
-
-        const isAuthenticated = await auth0Client.isAuthenticated();
         if (isAuthenticated) {
             return await userDetails() as UserDetailsReturnProps
         } else {
@@ -134,76 +152,65 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     transaction_input: JSON.stringify({
                         othentFunction: "idToken",
                     }),
-                    redirect_uri: window.location.origin
+                    redirect_uri: window.location.origin,
                 }
             };
-            await auth0Client.loginWithPopup(options);
-            const accessToken = await auth0Client.getTokenSilently({
-                detailedResponse: true
-            });
-            const JWT = accessToken.id_token;
-            let decoded_JWT: DecodedJWT = jwt_decode(JWT)
-
-            if (decoded_JWT.contract_id) {
-
-                delete decoded_JWT.nonce
-                delete decoded_JWT.sid
-                delete decoded_JWT.aud
-                delete decoded_JWT.iss
-                delete decoded_JWT.iat
-                delete decoded_JWT.exp
-                delete decoded_JWT.updated_at
-                return decoded_JWT
-
-            } else {
-
-                return await axios({
-                    method: 'POST',
-                    url: 'https://server.othent.io/create-user',
-                    data: { JWT, API_ID }
-                })
-                    .then(response => {
-                        const new_user_details = response.data
-
-                        return {
-                            contract_id: new_user_details.contract_id,
-                            given_name: new_user_details.given_name,
-                            family_name: new_user_details.family_name,
-                            nickname: new_user_details.nickname,
-                            name: new_user_details.name,
-                            picture: new_user_details.picture,
-                            locale: new_user_details.locale,
-                            email: new_user_details.email,
-                            email_verified: new_user_details.email_verified,
-                            sub: new_user_details.sub,
-                            success: new_user_details.success,
-                            message: new_user_details.message
-                        }
-
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                        throw error;
-                    });
-
-
-
-
-            }
-
+            return await auth0.loginWithRedirect(options);
         }
+    }
 
+    // check if we were redirected from a login
+    const redirectedFromLogin =
+        location.search.includes("state=")
+        && (location.search.includes("code=") || location.search.includes("error="))
+
+    // if we were redirected from login, handle it
+    if (redirectedFromLogin)
+        handleLoginWithRedirect()
+            .then( res => {} ) // We don't return userDetails, because redirect breaks js flow
+            .catch( err => console.log(err) )
+
+    async function handleLoginWithRedirect() {
+        const auth0 = await getAuth0Client()
+
+        try {
+            await auth0.handleRedirectCallback();
+        } catch (err) {
+            // we just console.log the error because auth0 sometimes
+            // throws invalid state or invalid code for no reason
+            console.log(err)
+        }
+        window.history.replaceState({}, document.title, "/");
+
+        // get user to check if we need to create an account
+        const accessToken = await auth0.getTokenSilently({
+            detailedResponse: true
+        });
+
+        const JWT = accessToken.id_token;
+        let decoded_JWT: DecodedJWT = jwt_decode(JWT)
+
+        if (!decoded_JWT.contract_id) {
+            // we only create a user if we need to
+            return await axios({
+                method: 'POST',
+                url: 'https://server.othent.io/create-user',
+                data: { JWT, API_ID }
+            })
+                .then( response => response.data )
+                .catch( error => {
+                    console.log(error.response.data);
+                    throw error;
+                });
+        }
     }
 
 
 
     // log out
     async function logOut(): Promise<LogOutReturnProps> {
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-        });
-        await auth0Client.logout({
+        const auth0 = await getAuth0Client()
+        await auth0.logout({
             logoutParams: {
                 returnTo: window.location.origin
             }
@@ -215,21 +222,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
     async function userDetails(): Promise<UserDetailsReturnProps> {
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-        });
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
-            cacheMode: 'off',
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: "idToken",
-                })
-            }
-        });
+        const auth0 = await getAuth0Client()
+
+        const authParams = { transaction_input: JSON.stringify({ othentFunction: "idToken" }) }
+        const accessToken = await getTokenSilently(auth0, authParams)
+
         const JWT = accessToken.id_token
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
+
         if (decoded_JWT.contract_id) {
             delete decoded_JWT.nonce
             delete decoded_JWT.sid
@@ -240,7 +240,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             delete decoded_JWT.updated_at
             return decoded_JWT;
         } else {
-            throw new Error(`{success: false, message:"Please create a Othent account"}`)
+            throw new Error(`{success: false, message: "Please create a Othent account"}`)
         }
     }
 
@@ -250,20 +250,11 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
     // read contract
     async function readContract(): Promise<ReadContractReturnProps> {
+        const auth0 = await getAuth0Client()
 
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-        });
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
-            cacheMode: 'off',
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: "idToken",
-                })
-            }
-        });
+        const authParams = { transaction_input: JSON.stringify({ othentFunction: "idToken" }) }
+        const accessToken = await getTokenSilently(auth0, authParams)
+
         const JWT = accessToken.id_token;
 
         return await axios({
@@ -289,30 +280,20 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         params.tags ??= []
 
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-        });
+        const auth0 = await getAuth0Client()
 
-        const warpData = {
-            function: params.othentFunction,
-            data: {
-                toContractId: params.data.toContractId,
-                toContractFunction: params.data.toContractFunction,
-                txnData: params.data.txnData
-            }
-        }
+        const warpData = { function: params.othentFunction, data: {
+            toContractId: params.data.toContractId,
+            toContractFunction: params.data.toContractFunction,
+            txnData: params.data.txnData
+        } }
 
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
-            cacheMode: 'off',
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: params.othentFunction,
-                    warpData: warpData,
-                })
-            }
-        });
+        const authParams = { transaction_input: JSON.stringify({
+            othentFunction: params.othentFunction,
+            warpData: warpData,
+        }) }
+
+        const accessToken = await getTokenSilently(auth0, authParams)
 
         const JWT = accessToken.id_token
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
@@ -357,10 +338,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         params.tags ??= [];
 
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        });
+        const auth0 = await getAuth0Client()
 
         let uint8Array;
 
@@ -378,16 +356,13 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
         const file_hash = await sha256(uint8Array);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
-            cacheMode: 'off',
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: params.othentFunction,
-                    file_hash: file_hash,
-                }),
-            }
-        });
+
+        const authParams = { transaction_input: JSON.stringify({
+            othentFunction: params.othentFunction,
+            file_hash: file_hash,
+        }) }
+        const accessToken = await getTokenSilently(auth0, authParams)
+
         const JWT = accessToken.id_token
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
@@ -446,10 +421,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         params.tags ??= [];
 
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-        });
+        const auth0 = await getAuth0Client()
 
         let uint8Array;
 
@@ -467,16 +439,13 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
         const file_hash = await sha256(uint8Array);
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
-            cacheMode: 'off',
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                    othentFunction: params.othentFunction,
-                    file_hash: file_hash,
-                }),
-            }
-        });
+
+        const authParams = { transaction_input: JSON.stringify({
+            othentFunction: params.othentFunction,
+            file_hash: file_hash,
+        }) }
+        const accessToken = await getTokenSilently(auth0, authParams)
+
         const JWT = accessToken.id_token
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
@@ -537,21 +506,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         const JWK_public_key = null
         const JWK_public_key_PEM = jwkToPem(key1);
 
-        const auth0Client = await createAuth0Client({
-            domain: "othent.us.auth0.com",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
-        });
+        const auth0 = await getAuth0Client()
 
-        const accessToken = await auth0Client.getTokenSilently({
-            detailedResponse: true,
-            cacheMode: 'off',
-            authorizationParams: {
-                transaction_input: JSON.stringify({
-                othentFunction: 'initializeJWK',
-                warpData: { function: 'initializeJWK', data: { JWK_public_key_PEM, JWK_public_key } },
-                })
-            }
-        });
+        const authParams = { transaction_input: JSON.stringify({
+            othentFunction: 'initializeJWK',
+            warpData: { function: 'initializeJWK', data: { JWK_public_key_PEM, JWK_public_key } }
+        }) }
+        const accessToken = await getTokenSilently(auth0, authParams)
+
         const PEM_key_JWT = accessToken.id_token;
     
         return axios({

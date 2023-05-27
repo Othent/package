@@ -8,7 +8,7 @@ export interface useOthentReturnProps {
     getAPIID(): Promise<getAPIIDReturnProps>,
     addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps>,
     ping(): Promise<PingReturnProps>,
-    logIn(): Promise<LogInReturnProps>,
+    logIn(): Promise<void | LogInReturnProps>,
     logOut(): Promise<LogOutReturnProps>,
     userDetails(): Promise<UserDetailsReturnProps>,
     readContract(): Promise<ReadContractReturnProps>,
@@ -76,7 +76,9 @@ export interface API_ID_JWT {
     API_ID: string
 }
 
-
+export interface CustomAuthParams {
+    [key: string]: any;
+}
 
 export interface addCallbackURLProps {
     callbackURL: string
