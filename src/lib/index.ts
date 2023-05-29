@@ -57,7 +57,10 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
     // helpers
     const getAuth0Client = () => createAuth0Client({
         domain: "othent.us.auth0.com",
-        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C"
+        clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
+        authorizationParams: {
+            redirect_uri: window.location.origin
+          }
     });
 
     function getTokenSilently(auth0: Auth0Client, authParams: CustomAuthParams) {
@@ -136,28 +139,32 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
     // log in
     async function logIn(): Promise<void | LogInReturnProps> {
-        const auth0 = await getAuth0Client()
-        let isAuthenticated = false
-        try {
-            isAuthenticated = await auth0.isAuthenticated();
-        } catch (err) {
-            console.log(err);
-        }
+        const auth0 = await getAuth0Client();
 
-        if (isAuthenticated) {
-            return await userDetails() as UserDetailsReturnProps
-        } else {
+        try {
+
+            const authParams = { transaction_input: JSON.stringify({ othentFunction: "idToken" }) }
+            await getTokenSilently(auth0, authParams)
+            return { success: 'false', message: 'User is already logged in' }
+
+          } catch (error) {
+
             const options = {
                 authorizationParams: {
-                    transaction_input: JSON.stringify({
-                        othentFunction: "idToken",
-                    }),
-                    redirect_uri: window.location.origin,
-                }
+                transaction_input: JSON.stringify({
+                    othentFunction: 'idToken',
+                }),
+                redirect_uri: window.location.origin,
+                },
             };
+
             return await auth0.loginWithRedirect(options);
-        }
+
+          }
+    
+
     }
+  
 
     // check if we were redirected from a login
     const redirectedFromLogin =
