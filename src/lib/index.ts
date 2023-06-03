@@ -357,7 +357,18 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
 
-
+    async function readFileData(file: File): Promise<Buffer> {
+        return new Promise<Buffer>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const fileData = reader.result as ArrayBuffer;
+                const buffer = Buffer.from(fileData);
+                resolve(buffer);
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+    }
 
     // sign transaction arweave
     async function signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps> {
@@ -369,22 +380,18 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
         });
 
-        let uint8Array;
-
-        if (typeof params.data === "string") {
-            const encoder = new TextEncoder();
-            uint8Array = encoder.encode(params.data);
-        } else if (params.data instanceof Uint8Array) {
-            uint8Array = params.data;
-        } else if (params.data instanceof ArrayBuffer) {
-            uint8Array = new Uint8Array(params.data);
-        } else if (typeof params.data === "object") {
-            uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
-        } else {
-            throw new TypeError("Unsupported data type");
+        let dataBuffer;
+        if (params.data instanceof File) {
+            dataBuffer = await readFileData(params.data);
+        } else if (!(params.data instanceof File)) {
+            dataBuffer = Buffer.from(params.data.toString(), 'utf8');
+        }
+        if (!dataBuffer) {
+            throw new Error('Invalid data, we accept: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File');
         }
 
-        const file_hash = await sha256(uint8Array);
+
+        const file_hash = await sha256(dataBuffer);
         const options = {
             authorizationParams: {
                 transaction_input: JSON.stringify({
@@ -401,9 +408,9 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
         if (!decoded_JWT.contract_id) {
-            throw new Error(`{success: false, message:"Please create a Othent account"}`)
+            throw new Error(`{ success: false, message: "Please create a Othent account" }`)
         }
-        return { data: params.data, JWT: accessToken.id_token, tags: params.tags };
+        return { data: dataBuffer, JWT: accessToken.id_token, tags: params.tags };
 
     }
 
@@ -460,22 +467,17 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
         });
 
-        let uint8Array;
-
-        if (typeof params.data === "string") {
-            const encoder = new TextEncoder();
-            uint8Array = encoder.encode(params.data);
-        } else if (params.data instanceof Uint8Array) {
-            uint8Array = params.data;
-        } else if (params.data instanceof ArrayBuffer) {
-            uint8Array = new Uint8Array(params.data);
-        } else if (typeof params.data === "object") {
-            uint8Array = new TextEncoder().encode(JSON.stringify(params.data));
-        } else {
-            throw new TypeError("Unsupported data type");
+        let dataBuffer;
+        if (params.data instanceof File) {
+            dataBuffer = await readFileData(params.data);
+        } else if (!(params.data instanceof File)) {
+            dataBuffer = Buffer.from(params.data.toString(), 'utf8');
+        }
+        if (!dataBuffer) {
+            throw new Error('Invalid data, we accept: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File');
         }
 
-        const file_hash = await sha256(uint8Array);
+        const file_hash = await sha256(dataBuffer);
         const options = {
             authorizationParams: {
                 transaction_input: JSON.stringify({
@@ -492,9 +494,9 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         const decoded_JWT: DecodedJWT = jwt_decode(JWT)
 
         if (!decoded_JWT.contract_id) {
-            throw new Error(`{success: false, message:"Please create a Othent account"}`)
+            throw new Error(`{ success: false, message: "Please create a Othent account" }`)
         }
-        return { data: params.data, JWT: accessToken.id_token, tags: params.tags };
+        return { data: dataBuffer, JWT: accessToken.id_token, tags: params.tags };
 
     }
 
