@@ -191,14 +191,14 @@ export interface SendTransactionWarpReturnProps {
 // sign transaction Arweave
 export interface SignTransactionArweaveProps {
     othentFunction: string,
-    data: File, 
+    data: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File;
     tags?: {
         name: string;
         value: string;
     }[]
 }
 export interface SignTransactionArweaveReturnProps {
-    data: File, 
+    data: Buffer, 
     JWT: string
     tags?: {
         name: string;
@@ -207,7 +207,7 @@ export interface SignTransactionArweaveReturnProps {
 }
 // send transaction - Arweave
 export interface SendTransactionArweaveProps {
-    data: File, 
+    data: Buffer, 
     JWT: string,
     tags?: {
         name: string;
@@ -224,7 +224,7 @@ export interface SendTransactionArweaveReturnProps {
 // sign transaction - bundlr
 export interface SignTransactionBundlrProps {
     othentFunction: string;
-    data: File;
+    data: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File;
     tags?: {
       name: string;
       value: string;
@@ -232,7 +232,7 @@ export interface SignTransactionBundlrProps {
   }
   
   export interface SignTransactionBundlrReturnProps {
-    data: File;
+    data: Buffer;
     JWT: string;
     tags?: {
       name: string;
@@ -242,7 +242,7 @@ export interface SignTransactionBundlrProps {
   
   // send transaction - bundlr
   export interface SendTransactionBundlrProps {
-    data: File;
+    data: Buffer;
     JWT: string;
     tags?: {
       name: string;
