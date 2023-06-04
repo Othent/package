@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { AxiosResponse } from 'axios';
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
@@ -35,6 +36,10 @@ import {
     readCustomContractReturnProps,
     useOthentProps,
     useOthentReturnProps,
+    verifyArweaveDataProps,
+    verifyArweaveDataReturnProps,
+    verifyBundlrDataProps,
+    verifyBundlrDataReturnProps,
   } from "../types/index.js";
 
 
@@ -644,6 +649,97 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
 
+    async function verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps> {
+        let getTagHash = await fetch(`https://arweave.net/tx/${params.transactionId}`, {
+            headers: {
+                responseType: 'arraybuffer' 
+            } 
+        });
+        let decodedVerifyJWT: any;
+        const getTagHashJson = await getTagHash.json()
+        getTagHashJson.tags.map((tag: { name: string, value: string }) => {
+            if (atob(tag.name) === 'File-Hash-JWT') {
+                decodedVerifyJWT = jwt_decode(atob(tag.value))
+            }
+        });
+        const tagHash = decodedVerifyJWT.file_hash;
+    
+        let axiosResponse: AxiosResponse<ArrayBuffer> = await axios.get(`https://arweave.net/${params.transactionId}`, { 
+            responseType: 'arraybuffer'
+        });
+        let getOnChainData = axiosResponse.data;
+        const onChainHash = await sha256(getOnChainData);
+    
+        if (tagHash === onChainHash) {
+            return {
+                validData: true,
+                contract_id: decodedVerifyJWT.contract_id,
+                onChainHash: onChainHash,
+                tagHash: tagHash,
+                iat: decodedVerifyJWT.iat,
+                userId: decodedVerifyJWT.sub
+            }
+        } else {
+            return {
+                validData: false,
+                onChainHash: onChainHash,
+                tagHash: tagHash
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+    // Verify bundlr data
+    async function verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps> {
+        let getTagHash = await fetch(`https://gateway.bundlr.network/tx/${params.transactionId}`, {
+            headers: {
+                responseType: 'arraybuffer' 
+            } 
+        });
+        let decodedVerifyJWT: any;
+        const getTagHashJson = await getTagHash.json()
+        getTagHashJson.tags.map((tag: { name: string, value: string }) => {
+            if (tag.name === 'File-Hash-JWT') {
+                decodedVerifyJWT = jwt_decode(tag.value);
+            }
+        });
+        const tagHash = decodedVerifyJWT.file_hash;
+    
+        let axiosResponse: AxiosResponse<ArrayBuffer> = await axios.get(`https://arweave.net/${params.transactionId}`, { 
+            responseType: 'arraybuffer'
+        });
+        let getOnChainData = axiosResponse.data;
+        const onChainHash = await sha256(getOnChainData);
+    
+        if (tagHash === onChainHash) {
+            return {
+                validData: true,
+                contract_id: decodedVerifyJWT.contract_id,
+                onChainHash: onChainHash,
+                tagHash: tagHash,
+                iat: decodedVerifyJWT.iat,
+                userId: decodedVerifyJWT.sub
+            }
+        } else {
+            return {
+                validData: false,
+                onChainHash: onChainHash,
+                tagHash: tagHash
+            }
+        }
+    }
+
+
+
+
+
+
 
     return {
         getAPIID,
@@ -661,7 +757,9 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         sendTransactionBundlr,
         initializeJWK,
         JWKBackupTxn,
-        readCustomContract
+        readCustomContract,
+        verifyArweaveData,
+        verifyBundlrData
     };
 
 })

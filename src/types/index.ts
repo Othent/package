@@ -21,6 +21,8 @@ export interface useOthentReturnProps {
     initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>,
     JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>,
     readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
+    verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps>,
+    verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps>,
   }
   
 
@@ -302,6 +304,37 @@ export interface readCustomContractReturnProps {
     state: object, 
     errors: object, 
     validity: object
+}
+
+
+
+
+// Verify arweave data
+export interface verifyArweaveDataProps {
+    transactionId: string
+}
+export interface verifyArweaveDataReturnProps {
+    validData: boolean,
+    onChainHash: string,
+    tagHash: string,
+    contract_id?: string,
+    iat?: number,
+    userId?: string,
+}
+
+
+
+// Verify bundlr data
+export interface verifyBundlrDataProps {
+    transactionId: string
+}
+export interface verifyBundlrDataReturnProps {
+    validData: boolean,
+    onChainHash: string,
+    tagHash: string,
+    contract_id?: string,
+    iat?: number,
+    userId?: string,
 }
 
 
