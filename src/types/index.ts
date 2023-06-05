@@ -23,7 +23,7 @@ export interface useOthentReturnProps {
     readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
     verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps>,
     verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps>,
-  }
+}
 
 
 
