@@ -60,7 +60,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
 
-        
+        // auth0
         const getAuth0Client = () => createAuth0Client({
             domain: "auth.othent.io",
             clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
@@ -80,15 +80,11 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         // get API keys
         async function getAPIID(): Promise<getAPIIDReturnProps> {
-
             const auth0 = await getAuth0Client()
-
             const authParams = { transaction_input: JSON.stringify({ othentFunction: "API_ID" }) }
             const accessToken = await getTokenSilently(auth0, authParams)
-            
             const JWT = accessToken.id_token
             const decoded_JWT: API_ID_JWT = jwt_decode(JWT)
-
             if (decoded_JWT.contract_id) {
                 return { API_ID: decoded_JWT.API_ID }
             } else {
@@ -100,7 +96,6 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         // add callback url
         async function addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps> {
-            
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/add-callback-url',
@@ -124,21 +119,19 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                 method: 'GET',
                 url: 'https://server.othent.io/',
             })
-                .then(response => {
-                    return response.data;
-                })
-                .catch(error => {
-                    throw error;
-                });
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                throw error;
+            });
         }
 
 
 
         // log in
         async function logIn(): Promise<LogInReturnProps> {
-
             const auth0 = await getAuth0Client();
-
             const isAuthenticated = await auth0.isAuthenticated();
             if (isAuthenticated) {
                 return await userDetails() as UserDetailsReturnProps
@@ -166,9 +159,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     }
                     throw new Error('Your browser is blocking us! Please turn off your shields or allow cross site cookies! :)')
                 }
-
                 if (decoded_JWT && decoded_JWT.contract_id) { 
-
                     delete decoded_JWT.nonce
                     delete decoded_JWT.sid
                     delete decoded_JWT.aud
@@ -177,42 +168,35 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     delete decoded_JWT.exp
                     delete decoded_JWT.updated_at
                     return decoded_JWT
-
                 } else {
-
                     return await axios({
                         method: 'POST',
                         url: 'https://server.othent.io/create-user',
                         data: { JWT, API_ID }
                     })
-                        .then(response => {
-                            const new_user_details = response.data
-
-                            return {
-                                contract_id: new_user_details.contract_id,
-                                given_name: new_user_details.given_name,
-                                family_name: new_user_details.family_name,
-                                nickname: new_user_details.nickname,
-                                name: new_user_details.name,
-                                picture: new_user_details.picture,
-                                locale: new_user_details.locale,
-                                email: new_user_details.email,
-                                email_verified: new_user_details.email_verified,
-                                sub: new_user_details.sub,
-                                success: new_user_details.success,
-                                message: new_user_details.message
-                            }
-
-                        })
-                        .catch(error => {
-                            console.log(error.response.data);
-                            throw error;
-                        });
-
+                    .then(response => {
+                        const new_user_details = response.data
+                        return {
+                            contract_id: new_user_details.contract_id,
+                            given_name: new_user_details.given_name,
+                            family_name: new_user_details.family_name,
+                            nickname: new_user_details.nickname,
+                            name: new_user_details.name,
+                            picture: new_user_details.picture,
+                            locale: new_user_details.locale,
+                            email: new_user_details.email,
+                            email_verified: new_user_details.email_verified,
+                            sub: new_user_details.sub,
+                            success: new_user_details.success,
+                            message: new_user_details.message
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                        throw error;
+                    });
                 }
-
             }
-
         }
 
 
