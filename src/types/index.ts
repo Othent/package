@@ -24,6 +24,13 @@ export interface useOthentReturnProps {
     verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps>,
     verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps>,
   }
+
+
+
+// auth0
+export interface CustomAuthParams {
+    [key: string]: any;
+}
   
 
 
