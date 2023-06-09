@@ -49,11 +49,11 @@ import {
 // Othent
 export async function Othent(params: useOthentProps): Promise<useOthentReturnProps> {
     const API_ID = params.API_ID;
-    const CallbackURLs = params.CallbackURLs;
+    const callbackURLs = params.callbackURLs;
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/use-othent',
-        data: { API_ID, CallbackURLs }
+        data: { API_ID, callbackURLs }
     })
     .then((API_valid) => {
         if (API_valid.data.success === false) {

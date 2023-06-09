@@ -3,7 +3,7 @@
 // useOthent
 export interface useOthentProps {
     API_ID: string
-    CallbackURLs: string[]
+    callbackURLs: string[]
 }
 export interface useOthentReturnProps {
     getAPIID(): Promise<getAPIIDReturnProps>,
