@@ -8,6 +8,7 @@ export interface useOthentProps {
 export interface useOthentReturnProps {
     getAPIID(): Promise<getAPIIDReturnProps>,
     addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps>,
+    queryWalletAddressTxns(params: queryWalletAddressTxnsProps): Promise<queryWalletAddressTxnsReturnProps>,
     ping(): Promise<PingReturnProps>,
     logIn(): Promise<LogInReturnProps>,
     logOut(): Promise<LogOutReturnProps>,
@@ -86,7 +87,7 @@ export interface API_ID_JWT {
 }
 
 
-
+// add callback URL
 export interface addCallbackURLProps {
     callbackURL: string
 }
@@ -95,6 +96,15 @@ export interface addCallbackURLReturnProps {
     message: string
 }
 
+
+// query a wallet addresses transactions
+export interface queryWalletAddressTxnsProps {
+    walletAddress: string
+}
+export interface queryWalletAddressTxnsReturnProps {
+    success: boolean,
+    transactions: []
+}
 
 
 

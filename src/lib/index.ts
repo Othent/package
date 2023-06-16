@@ -40,7 +40,9 @@ import {
     verifyArweaveDataReturnProps,
     verifyBundlrDataProps,
     verifyBundlrDataReturnProps,
-    CustomAuthParams
+    CustomAuthParams,
+    queryWalletAddressTxnsProps,
+    queryWalletAddressTxnsReturnProps
   } from "../types/index.js";
 
 
@@ -108,8 +110,23 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             .catch(error => {
                 throw error;
             });
+        }
 
-        }     
+
+        // query a wallet addresses transactions
+        async function queryWalletAddressTxns(params: queryWalletAddressTxnsProps): Promise<queryWalletAddressTxnsReturnProps> {
+            return await axios({
+                method: 'POST',
+                url: 'https://server.othent.io/query-wallet-address-txns',
+                data: { walletAddress: params.walletAddress }
+            })
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                throw error;
+            });
+        }
 
 
 
@@ -628,6 +645,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         return {
             getAPIID,
             addCallbackURL,
+            queryWalletAddressTxns,
             ping,
             logIn,
             logOut,
