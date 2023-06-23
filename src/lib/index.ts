@@ -42,7 +42,8 @@ import {
     verifyBundlrDataReturnProps,
     CustomAuthParams,
     queryWalletAddressTxnsProps,
-    queryWalletAddressTxnsReturnProps
+    queryWalletAddressTxnsReturnProps,
+    UploadDataType
   } from "../types/index.js";
 
 
@@ -92,6 +93,26 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             } else {
                 throw new Error(`{ success: false, message: "Please create a Othent account" }`)
             }
+        }
+
+
+        // process data
+        async function processData(data: UploadDataType): Promise<Buffer> {
+            let dataBuffer: Buffer;
+            if (data instanceof File) {
+                dataBuffer = await readFileData(data);
+            } else if (typeof data === 'string') {
+                dataBuffer = Buffer.from(data, 'utf8');
+            } else if (Buffer.isBuffer(data)) {
+                dataBuffer = data;
+            } else if (data instanceof ArrayBuffer || data instanceof SharedArrayBuffer) {
+                dataBuffer = Buffer.from(data);
+            } else if (data instanceof Uint8Array) {
+                dataBuffer = Buffer.from(data.buffer);
+            } else {
+                throw new Error('Invalid data, we accept: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File');
+            }
+            return dataBuffer
         }
 
 
@@ -350,12 +371,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         // sign transaction arweave
         async function signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps> {
             params.tags ??= [];
-            let dataBuffer;
-            if (params.data instanceof File) {
-                dataBuffer = await readFileData(params.data);
-            } else if (!(params.data instanceof File)) {
-                dataBuffer = Buffer.from(params.data.toString(), 'utf8');
-            }
+            const dataBuffer = await processData(params.data)
             if (!dataBuffer) {
                 throw new Error('Invalid data, we accept: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File');
             }
@@ -414,12 +430,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         // sign transaction - bundlr
         async function signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps> {
             params.tags ??= [];
-            let dataBuffer;
-            if (params.data instanceof File) {
-                dataBuffer = await readFileData(params.data);
-            } else if (!(params.data instanceof File)) {
-                dataBuffer = Buffer.from(params.data.toString(), 'utf8');
-            }
+            const dataBuffer = await processData(params.data)
             if (!dataBuffer) {
                 throw new Error('Invalid data, we accept: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File');
             }

@@ -203,13 +203,13 @@ export interface SendTransactionWarpReturnProps {
 }
 
 
-
+export type UploadDataType = string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File;
 
 
 // sign transaction Arweave
 export interface SignTransactionArweaveProps {
     othentFunction: string,
-    data: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File;
+    data: UploadDataType;
     tags?: {
         name: string;
         value: string;
@@ -242,7 +242,7 @@ export interface SendTransactionArweaveReturnProps {
 // sign transaction - bundlr
 export interface SignTransactionBundlrProps {
     othentFunction: string;
-    data: string | Buffer | ArrayBuffer | SharedArrayBuffer | Uint8Array | File;
+    data: UploadDataType;
     tags?: {
       name: string;
       value: string;
