@@ -117,23 +117,6 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
 
-
-        // add callback url
-        async function addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps> {
-            return await axios({
-                method: 'POST',
-                url: 'https://server.othent.io/add-callback-url',
-                data: { callbackURL: params.callbackURL }
-            })
-            .then(response => {
-                return response.data;
-            })
-            .catch(error => {
-                throw error;
-            });
-        }
-
-
         // query a wallet addresses transactions
         async function queryWalletAddressTxns(params: queryWalletAddressTxnsProps): Promise<queryWalletAddressTxnsReturnProps> {
             return await axios({
