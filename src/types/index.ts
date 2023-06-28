@@ -6,7 +6,7 @@ export interface useOthentProps {
 }
 export interface useOthentReturnProps {
     getAPIID(): Promise<getAPIIDReturnProps>,
-    addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps>,
+    // addCallbackURL(params: addCallbackURLProps): Promise<addCallbackURLReturnProps>,
     queryWalletAddressTxns(params: queryWalletAddressTxnsProps): Promise<queryWalletAddressTxnsReturnProps>,
     ping(): Promise<PingReturnProps>,
     logIn(): Promise<LogInReturnProps>,

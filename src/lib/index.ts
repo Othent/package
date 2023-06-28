@@ -5,6 +5,7 @@ import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 import jwkToPem from 'jwk-to-pem';
 import { KJUR } from 'jsrsasign';
+import { Buffer } from 'buffer';
 import {
     API_ID_JWT,
     DecodedJWT,
@@ -638,7 +639,6 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         return {
             getAPIID,
-            addCallbackURL,
             queryWalletAddressTxns,
             ping,
             logIn,
