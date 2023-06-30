@@ -5,6 +5,7 @@ import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 import jwkToPem from 'jwk-to-pem';
 import { KJUR } from 'jsrsasign';
+import { Buffer } from 'buffer';
 import {
     API_ID_JWT,
     DecodedJWT,
@@ -52,7 +53,7 @@ import {
 // Othent
 export async function Othent(params: useOthentProps): Promise<useOthentReturnProps> {
     const API_ID = params.API_ID;
-    const callbackURL = window.location.href
+    const callbackURL = window.location.origin
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/use-othent',
@@ -638,7 +639,6 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         return {
             getAPIID,
-            addCallbackURL,
             queryWalletAddressTxns,
             ping,
             logIn,
