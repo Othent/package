@@ -53,7 +53,7 @@ import {
 // Othent
 export async function Othent(params: useOthentProps): Promise<useOthentReturnProps> {
     const API_ID = params.API_ID;
-    const callbackURL = window.location.href
+    const callbackURL = window.location.origin
     return axios({
         method: 'POST',
         url: 'https://server.othent.io/use-othent',
