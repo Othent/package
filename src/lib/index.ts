@@ -29,8 +29,6 @@ import {
     SignTransactionWarpProps,
     SignTransactionWarpReturnProps,
     UserDetailsReturnProps,
-    addCallbackURLProps,
-    addCallbackURLReturnProps,
     getAPIIDReturnProps,
     readCustomContractProps,
     readCustomContractReturnProps,
@@ -638,7 +636,6 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         return {
             getAPIID,
-            addCallbackURL,
             queryWalletAddressTxns,
             ping,
             logIn,
