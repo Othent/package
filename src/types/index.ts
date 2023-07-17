@@ -8,7 +8,7 @@ export interface useOthentReturnProps {
     getAPIID(): Promise<getAPIIDReturnProps>,
     queryWalletAddressTxns(params: queryWalletAddressTxnsProps): Promise<queryWalletAddressTxnsReturnProps>,
     ping(): Promise<PingReturnProps>,
-    logIn(): Promise<LogInReturnProps>,
+    logIn(params: LogInProps): Promise<LogInReturnProps>,
     logOut(): Promise<LogOutReturnProps>,
     userDetails(): Promise<UserDetailsReturnProps>,
     readContract(): Promise<ReadContractReturnProps>,
@@ -107,6 +107,9 @@ export interface PingReturnProps {
 
 
 // logIn
+export interface LogInProps {
+    authProvider?: string
+}
 export interface LogInReturnProps {
     contract_id: string,
     given_name: string,

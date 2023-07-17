@@ -12,6 +12,7 @@ import {
     InitializeJWKReturnProps,
     JWKBackupTxnProps,
     JWKBackupTxnReturnProps,
+    LogInProps,
     LogInReturnProps,
     LogOutReturnProps,
     PingReturnProps,
@@ -61,15 +62,29 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             throw new Error('Please specify an API ID (you can get one from Othent.io)');
         }
 
-
         // auth0
-        const getAuth0Client = () => createAuth0Client({
-            domain: "auth.othent.io",
-            clientId: "dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C",
-            authorizationParams: {
-                redirect_uri: window.location.origin
+        const getAuth0Client = (authProvider?: string) => {
+            let clientId: string = '';
+            if (!authProvider) {
+                clientId = 'dyegx4dZj5yOv0v0RkoUsc48CIqaNS6C';
+            } else if (authProvider === 'google') {
+                clientId = 'LRLUYt9azsvoP5Ge07Ov3FsrVG6MNHJo';
+            } else if (authProvider === 'emailPass') {
+                clientId = 'mSmDjXHSPVMI7adt7W91gGzTtCvXEVtQ';
+            } else if (authProvider === 'apple') {
+                clientId = 'TDyO31RRXlFxpP1XGHCtAmEMpGNtiOIp';
+            } else if (authProvider === 'twitter') {
+                clientId = 'DjlWPmgVPGiLdRb9KwkpraJOTFHZmRov';
             }
-        });
+            return createAuth0Client({
+                domain: "auth.othent.io",
+                clientId: clientId,
+                authorizationParams: {
+                    redirect_uri: window.location.origin
+                }
+            });
+        };
+
 
         function getTokenSilently(auth0: Auth0Client, authParams: CustomAuthParams) {
             return auth0.getTokenSilently({
@@ -150,8 +165,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
         // log in
-        async function logIn(): Promise<LogInReturnProps> {
-            const auth0 = await getAuth0Client();
+        async function logIn(params: LogInProps): Promise<LogInReturnProps> {
+            const auth0 = await getAuth0Client(params.authProvider);
             const isAuthenticated = await auth0.isAuthenticated();
             if (isAuthenticated) {
                 return await userDetails() as UserDetailsReturnProps
