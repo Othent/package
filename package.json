@@ -47,6 +47,7 @@
     "@rollup/plugin-commonjs": "^24.1.0",
     "@rollup/plugin-terser": "^0.4.1",
     "@rollup/plugin-typescript": "^11.1.0",
+    "@types/crypto-js": "^4.1.1",
     "@types/jsrsasign": "^10.5.8",
     "@types/jwk-to-pem": "^2.0.1",
     "@types/node": "^20.2.5",
