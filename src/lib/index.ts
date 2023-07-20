@@ -5,6 +5,8 @@ import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 import jwkToPem from 'jwk-to-pem';
 import { KJUR } from 'jsrsasign';
+import AES from 'crypto-js/aes';
+import Utf8 from 'crypto-js/enc-utf8';
 import {
     API_ID_JWT,
     DecodedJWT,
@@ -42,6 +44,10 @@ import {
     queryWalletAddressTxnsProps,
     queryWalletAddressTxnsReturnProps,
     UploadDataType,
+    EncryptDataProps,
+    EncryptDataReturnProps,
+    DecryptDataProps,
+    DecryptDataReturnProps,
     DeployWarpContractProps,
     DeployWarpContractReturnProps
   } from "../types/index.js";
@@ -635,6 +641,26 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
 
+        // encrypt data
+        async function encryptData(params: EncryptDataProps): Promise<EncryptDataReturnProps> {
+            const data = params.data;
+            const key = params.key;
+            const encryptedData = AES.encrypt(data, key).toString();
+            return { encryptedData: encryptedData };
+        }
+        
+        
+        // decrypt data
+        async function decryptData(params: DecryptDataProps): Promise<DecryptDataReturnProps> {
+            const data = params.data;
+            const key = params.key;
+            const bytes = AES.decrypt(data, key);
+            const decryptedData = bytes.toString(Utf8);
+            return { decryptedData: decryptedData };
+        }
+
+
+
         // Deploy a Warp contract
         async function deployWarpContract(params: DeployWarpContractProps): Promise<DeployWarpContractReturnProps> {
             params.tags ??= []
@@ -687,6 +713,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             readCustomContract,
             verifyArweaveData,
             verifyBundlrData,
+            encryptData,
+            decryptData,
             deployWarpContract
         };
     })
