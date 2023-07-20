@@ -47,7 +47,9 @@ import {
     EncryptDataProps,
     EncryptDataReturnProps,
     DecryptDataProps,
-    DecryptDataReturnProps
+    DecryptDataReturnProps,
+    DeployWarpContractProps,
+    DeployWarpContractReturnProps,
   } from "../types/index.js";
 
 
@@ -659,6 +661,41 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
 
+        // Deploy a Warp contract
+        async function deployWarpContract(params: DeployWarpContractProps): Promise<DeployWarpContractReturnProps> {
+            params.tags ??= []
+            const file_hash = await sha256(params.contractSrc);
+            const auth0 = await getAuth0Client();
+            const authParams = { transaction_input: JSON.stringify({ 
+                othentFunction: 'uploadData',
+                file_hash: file_hash
+            }) }
+            const accessToken = await getTokenSilently(auth0, authParams)
+            const JWT = accessToken.id_token
+            return await axios({
+                method: 'POST',
+                url: 'https://server.othent.io/deploy-warp-contract',
+                data: { 
+                    contractSrc: params.contractSrc, 
+                    contractState: params.state, 
+                    JWT: JWT, 
+                    tags: params.tags 
+                }
+            })
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                throw error;
+            });
+        }
+
+
+
+
+
+
         return {
             getAPIID,
             queryWalletAddressTxns,
@@ -679,7 +716,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             verifyArweaveData,
             verifyBundlrData,
             encryptData,
-            decryptData
+            decryptData,
+            deployWarpContract
         };
     })
     .catch((error) => {
