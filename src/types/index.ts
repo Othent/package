@@ -366,7 +366,16 @@ export interface DecryptDataReturnProps {
 
 
 
-
+// Verify bundlr data
+export interface DeployWarpContractProps {
+    contractSrc: string, 
+    state: object, 
+    tags?: { name: string, value: string }[] 
+}
+export interface DeployWarpContractReturnProps {
+    contractTxId: string;
+    srcTxId?: string;
+}
 
 
 
