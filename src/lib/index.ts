@@ -651,7 +651,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                 url: 'https://server.othent.io/deploy-warp-contract',
                 data: { 
                     contractSrc: params.contractSrc, 
-                    contractState: params.contractState, 
+                    contractState: params.state, 
                     JWT: JWT, 
                     tags: params.tags 
                 }

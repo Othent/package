@@ -349,7 +349,7 @@ export interface verifyBundlrDataReturnProps {
 // Verify bundlr data
 export interface DeployWarpContractProps {
     contractSrc: string, 
-    contractState: object, 
+    state: object, 
     tags?: { name: string, value: string }[] 
 }
 export interface DeployWarpContractReturnProps {
