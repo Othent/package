@@ -345,6 +345,28 @@ export interface verifyBundlrDataReturnProps {
 
 
 
+// Encrypt data
+export interface EncryptDataProps {
+    data: string,
+    key: string
+}
+export interface EncryptDataReturnProps {
+    encryptedData: string
+}
+
+
+// Decrypted data
+export interface DecryptDataProps {
+    data: string,
+    key: string
+}
+export interface DecryptDataReturnProps {
+    decryptedData: string
+}
+
+
+
+
 
 
 
