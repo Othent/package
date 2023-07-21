@@ -5,8 +5,7 @@ import jwt_decode from 'jwt-decode';
 import { sha256 } from 'crypto-hash';
 import jwkToPem from 'jwk-to-pem';
 import { KJUR } from 'jsrsasign';
-import AES from 'crypto-js/aes';
-import Utf8 from 'crypto-js/enc-utf8';
+import CryptoJS from 'crypto-js';
 import {
     API_ID_JWT,
     DecodedJWT,
@@ -645,7 +644,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         async function encryptData(params: EncryptDataProps): Promise<EncryptDataReturnProps> {
             const data = params.data;
             const key = params.key;
-            const encryptedData = AES.encrypt(data, key).toString();
+            const encryptedData = CryptoJS.AES.encrypt(data, key).toString();
             return { encryptedData: encryptedData };
         }
         
@@ -654,8 +653,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         async function decryptData(params: DecryptDataProps): Promise<DecryptDataReturnProps> {
             const data = params.data;
             const key = params.key;
-            const bytes = AES.decrypt(data, key);
-            const decryptedData = bytes.toString(Utf8);
+            const bytes = CryptoJS.AES.decrypt(data, key);
+            const decryptedData = CryptoJS.enc.Utf8.stringify(bytes);
             return { decryptedData: decryptedData };
         }
 
