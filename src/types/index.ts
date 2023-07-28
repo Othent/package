@@ -1,3 +1,4 @@
+import type { Buffer } from "buffer/";
 
 
 // useOthent
@@ -18,8 +19,8 @@ export interface useOthentReturnProps {
     sendTransactionArweave(params: SendTransactionArweaveProps): Promise<SendTransactionArweaveReturnProps>,
     signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps>,
     sendTransactionBundlr(params: SendTransactionBundlrProps): Promise<SendTransactionBundlrReturnProps>,
-    initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>,
-    JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>,
+    // initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>,
+    // JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>,
     readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
     verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps>,
     verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps>,
