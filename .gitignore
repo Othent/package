@@ -108,3 +108,4 @@ dist
 
 notes.txt
 /package-lock.json
+/pnpm-lock.yaml

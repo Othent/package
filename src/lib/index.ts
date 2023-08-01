@@ -2,7 +2,6 @@ import axios from 'axios';
 import { AxiosResponse } from 'axios';
 import { Auth0Client, createAuth0Client } from '@auth0/auth0-spa-js';
 import jwt_decode from 'jwt-decode';
-import { sha256 } from 'crypto-hash';
 import jwkToPem from 'jwk-to-pem';
 import { KJUR } from 'jsrsasign';
 import CryptoJS from 'crypto-js';
@@ -51,6 +50,21 @@ import {
     DeployWarpContractReturnProps,
   } from "../types/index.js";
 
+
+
+
+// sha256
+async function sha256(message: string | BufferSource) {
+    const hashBuffer = await crypto.subtle.digest(
+        "SHA-256",
+        typeof message != "string" ? message : new TextEncoder().encode(message)
+    );
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+    return hashHex;
+}
 
 
 
