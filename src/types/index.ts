@@ -8,10 +8,10 @@ export interface useOthentReturnProps {
     getAPIID(): Promise<getAPIIDReturnProps>,
     queryWalletAddressTxns(params: queryWalletAddressTxnsProps): Promise<queryWalletAddressTxnsReturnProps>,
     ping(): Promise<PingReturnProps>,
-    logIn(): Promise<LogInReturnProps>,
+    logIn(params: LogInProps): Promise<LogInReturnProps>,
     logOut(): Promise<LogOutReturnProps>,
     userDetails(): Promise<UserDetailsReturnProps>,
-    readContract(): Promise<ReadContractReturnProps>,
+    readContract(params: ReadContractProps): Promise<ReadContractReturnProps>,
     signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps>,
     sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps>,
     signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps>,
@@ -107,6 +107,9 @@ export interface PingReturnProps {
 
 
 // logIn
+export interface LogInProps {
+    testNet?: boolean
+}
 export interface LogInReturnProps {
     contract_id: string,
     given_name: string,
@@ -147,6 +150,9 @@ export interface UserDetailsReturnProps {
 
 
 // read contract
+export interface ReadContractProps {
+    testNet?: boolean
+}
 export interface ReadContractReturnProps {
     state: object, 
     errors: object, 
@@ -178,6 +184,7 @@ export interface SignTransactionWarpReturnProps {
 }
 // send transaction - Warp
 export interface SendTransactionWarpProps {
+    testNet?: boolean,
     JWT: string,
     tags?: {
         name: string;
@@ -267,6 +274,7 @@ export interface SignTransactionBundlrProps {
 
 // backup keyfile
 export interface InitializeJWKProps {
+    testNet?: boolean,
     privateKey: object
 }
 export interface InitializeJWKReturnProps {
@@ -278,6 +286,7 @@ export interface InitializeJWKReturnProps {
 
 // JWK transaction
 export interface JWKBackupTxnProps {
+    testNet?: boolean,
     privateKey: {
         kty: "RSA";
         e: string;
@@ -304,6 +313,7 @@ export interface JWKBackupTxnReturnProps {
 
 // Read custom contract
 export interface readCustomContractProps {
+    testNet?: boolean,
     contract_id: string
 }
 export interface readCustomContractReturnProps {
@@ -368,6 +378,7 @@ export interface DecryptDataReturnProps {
 
 // Verify bundlr data
 export interface DeployWarpContractProps {
+    testNet?: boolean,
     contractSrc: string, 
     state: object, 
     tags?: { name: string, value: string }[] 

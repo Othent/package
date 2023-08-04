@@ -12,9 +12,11 @@ import {
     InitializeJWKReturnProps,
     JWKBackupTxnProps,
     JWKBackupTxnReturnProps,
+    LogInProps,
     LogInReturnProps,
     LogOutReturnProps,
     PingReturnProps,
+    ReadContractProps,
     ReadContractReturnProps,
     SendTransactionArweaveProps,
     SendTransactionArweaveReturnProps,
@@ -171,7 +173,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
         // log in
-        async function logIn(): Promise<LogInReturnProps> {
+        async function logIn(params: LogInProps): Promise<LogInReturnProps> {
             const auth0 = await getAuth0Client();
             const isAuthenticated = await auth0.isAuthenticated();
             if (isAuthenticated) {
@@ -210,10 +212,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     delete decoded_JWT.updated_at
                     return decoded_JWT
                 } else {
+                    let network = params.testNet
+                    if (!network) {
+                        network = false
+                    }
                     return await axios({
                         method: 'POST',
                         url: 'https://server.othent.io/create-user',
-                        data: { JWT, API_ID }
+                        data: { JWT, API_ID, network }
                     })
                     .then(response => {
                         const new_user_details = response.data
@@ -281,15 +287,19 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
         // read contract
-        async function readContract(): Promise<ReadContractReturnProps> {
+        async function readContract(params: ReadContractProps): Promise<ReadContractReturnProps> {
             const auth0 = await getAuth0Client();
             const authParams = { transaction_input: JSON.stringify({ othentFunction: "idToken" }) }
             const accessToken = await getTokenSilently(auth0, authParams)
             const JWT = accessToken.id_token;
+            let network = params.testNet
+            if (!network) {
+                network = false
+            }
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/read-contract',
-                data: { JWT }
+                data: { JWT, network }
             })
             .then(response => {
                 return response.data;
@@ -337,10 +347,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         async function sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps> {
             const JWT = params.JWT
             const tags = params.tags
+            let network = params.testNet
+            if (!network) {
+                network = false
+            }
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/send-transaction',
-                data: { JWT, tags, API_ID }
+                data: { JWT, tags, API_ID, network }
             })
             .then(response => {
                 return response.data;
@@ -500,10 +514,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             }) }
             const accessToken = await getTokenSilently(auth0, authParams)
             const PEM_key_JWT = accessToken.id_token;
+            let network = params.testNet
+            if (!network) {
+                network = false
+            }
             return axios({
                 method: 'POST',
                 url: 'https://server.othent.io/initialize-JWK',
-                data: { PEM_key_JWT, API_ID }
+                data: { PEM_key_JWT, API_ID, network }
             })
             .then(response => {
                 return response.data;
@@ -533,10 +551,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             const privatePem = jwkToPem(privateKey, { private: true });
             const header = { alg: 'RS256', typ: 'JWT', exp: Math.floor(Date.now() / 1000) + (60 * 60) };
             const JWK_signed_JWT = KJUR.jws.JWS.sign('RS256', JSON.stringify(header), JSON.stringify(payload), privatePem);
+            let network = params.testNet
+            if (!network) {
+                network = false
+            }
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/JWK-backup-transaction',
-                data: { JWK_signed_JWT, API_ID }
+                data: { JWK_signed_JWT, API_ID, network }
             })
             .then(response => {
                 return response.data;
@@ -551,10 +573,14 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         // Read custom contract
         async function readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps> {
+            let network = params.testNet
+            if (!network) {
+                network = false
+            }
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/read-custom-contract',
-                data: { contract_id: params.contract_id }
+                data: { contract_id: params.contract_id, network }
             })
             .then(response => {
                 return response.data;
@@ -685,6 +711,10 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             }) }
             const accessToken = await getTokenSilently(auth0, authParams)
             const JWT = accessToken.id_token
+            let network = params.testNet
+            if (!network) {
+                network = false
+            }
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/deploy-warp-contract',
@@ -692,7 +722,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     contractSrc: params.contractSrc, 
                     contractState: params.state, 
                     JWT: JWT, 
-                    tags: params.tags 
+                    tags: params.tags,
+                    network
                 }
             })
             .then(response => {
