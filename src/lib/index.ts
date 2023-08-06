@@ -119,10 +119,49 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
 
+
+
+        // check NSFW content
+        async function checkNSFW(file: File) {
+            const readFile = (file: File): Promise<HTMLImageElement> => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = () => reject(new Error("Failed to load image"));
+                        if (e.target && e.target.result) {
+                            img.src = e.target.result as string;
+                        }
+                    };
+                    reader.onerror = () => reject(new Error("Failed to read file"));
+                    reader.readAsDataURL(file);
+                });
+            };
+            const currentModel = await nsfwjs.load();
+            const img = await readFile(file);
+            const predictions = await currentModel.classify(img);
+            let NSFWProbability: number | null = null;
+            for (let item of predictions) {
+                if (item.className === "Porn") {
+                    NSFWProbability = item.probability * 100;
+                    break;
+                }
+            }
+            const allowedProbability = 10;
+            if (NSFWProbability !== null && NSFWProbability >= allowedProbability) {
+                throw new Error('NSFW content is not uploadable through our node.');
+            }
+        }
+
+
+
+
         // process data
         async function processData(data: UploadDataType): Promise<Buffer> {
             let dataBuffer: Buffer;
             if (data instanceof File) {
+                checkNSFW(data)
                 dataBuffer = await readFileData(data);
             } else if (typeof data === 'string') {
                 dataBuffer = Buffer.from(data, 'utf8');
@@ -382,44 +421,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                 reader.onerror = reject;
                 reader.readAsArrayBuffer(file);
             });
-        }
-
-
-
-
-        // check NSFW content
-        async function checkNSFW(file: File) {
-            const readFile = (file: File): Promise<HTMLImageElement> => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => resolve(img);
-                        img.onerror = () => reject(new Error("Failed to load image"));
-                        if (e.target && e.target.result) {
-                            img.src = e.target.result as string;
-                        }
-                    };
-                    reader.onerror = () => reject(new Error("Failed to read file"));
-                    reader.readAsDataURL(file);
-                });
-            };
-            const currentModel = await nsfwjs.load();
-            const img = await readFile(file);
-            const predictions = await currentModel.classify(img);
-            let NSFWProbability: number | null = null;
-            for (let item of predictions) {
-                if (item.className === "Porn") {
-                    NSFWProbability = item.probability * 100;
-                    break;
-                }
-            }
-            const allowedProbability = 10;
-            if (NSFWProbability !== null && NSFWProbability >= allowedProbability) {
-                throw new Error('NSFW content is not uploadable through our node.');
-            }
-        }
-        
+        }        
 
 
 
