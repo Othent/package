@@ -8,7 +8,7 @@ export interface useOthentReturnProps {
     getAPIID(): Promise<getAPIIDReturnProps>,
     queryWalletAddressTxns(params: queryWalletAddressTxnsProps): Promise<queryWalletAddressTxnsReturnProps>,
     ping(): Promise<PingReturnProps>,
-    logIn(): Promise<LogInReturnProps>,
+    logIn(params: LogInProps): Promise<LogInReturnProps>,
     logOut(): Promise<LogOutReturnProps>,
     userDetails(): Promise<UserDetailsReturnProps>,
     readContract(): Promise<ReadContractReturnProps>,
@@ -54,7 +54,8 @@ export interface DecodedJWT {
     exp?: number,
     sub: string,
     sid?: string,
-    nonce?: string
+    nonce?: string,
+    test_net_contract_id?: string
 }
 
 
@@ -80,7 +81,7 @@ export interface API_ID_JWT {
     exp: number,
     sub: string,
     sid: string,
-    nonce: string
+    nonce: string,
     API_ID: string
 }
 
@@ -107,6 +108,9 @@ export interface PingReturnProps {
 
 
 // logIn
+export interface LogInProps {
+    testNet?: boolean
+}
 export interface LogInReturnProps {
     contract_id: string,
     given_name: string,
@@ -142,6 +146,7 @@ export interface UserDetailsReturnProps {
     email: string,
     email_verified: string,
     sub: string,
+    test_net_contract_id?: string
 }
 
 
@@ -167,7 +172,8 @@ export interface SignTransactionWarpProps {
     tags?: {
         name: string;
         value: string;
-    }[]
+    }[],
+    testNet?: boolean
 }
 export interface SignTransactionWarpReturnProps {
     JWT: string, 

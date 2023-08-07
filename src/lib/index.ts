@@ -12,6 +12,7 @@ import {
     InitializeJWKReturnProps,
     JWKBackupTxnProps,
     JWKBackupTxnReturnProps,
+    LogInProps,
     LogInReturnProps,
     LogOutReturnProps,
     PingReturnProps,
@@ -169,92 +170,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         }
 
 
-
-        // log in
-        async function logIn(): Promise<LogInReturnProps> {
-            const auth0 = await getAuth0Client();
-            const isAuthenticated = await auth0.isAuthenticated();
-            if (isAuthenticated) {
-                return await userDetails() as UserDetailsReturnProps
-            } else {
-                const options = {
-                    authorizationParams: {
-                        transaction_input: JSON.stringify({
-                            othentFunction: "idToken",
-                        }),
-                        redirect_uri: window.location.origin
-                    }
-                };
-                let decoded_JWT: DecodedJWT| null = null;
-                let JWT: string = "";
-                try {
-                    await auth0.loginWithPopup(options);
-                    const authParams = { transaction_input: JSON.stringify({ othentFunction: "idToken" }) }
-                    const accessToken = await getTokenSilently(auth0, authParams)
-                    JWT = accessToken.id_token;
-                    decoded_JWT = jwt_decode(JWT)
-                } catch (error) {
-                    let errorMessage = "Error: Login required";
-                    if (error instanceof Error) {
-                        errorMessage = error.message;
-                    }
-                    throw new Error('Your browser is blocking us! Please turn off your shields or allow cross site cookies! :)')
-                }
-                if (decoded_JWT && decoded_JWT.contract_id) { 
-                    delete decoded_JWT.nonce
-                    delete decoded_JWT.sid
-                    delete decoded_JWT.aud
-                    delete decoded_JWT.iss
-                    delete decoded_JWT.iat
-                    delete decoded_JWT.exp
-                    delete decoded_JWT.updated_at
-                    return decoded_JWT
-                } else {
-                    return await axios({
-                        method: 'POST',
-                        url: 'https://server.othent.io/create-user',
-                        data: { JWT, API_ID }
-                    })
-                    .then(response => {
-                        const new_user_details = response.data
-                        return {
-                            contract_id: new_user_details.contract_id,
-                            given_name: new_user_details.given_name,
-                            family_name: new_user_details.family_name,
-                            nickname: new_user_details.nickname,
-                            name: new_user_details.name,
-                            picture: new_user_details.picture,
-                            locale: new_user_details.locale,
-                            email: new_user_details.email,
-                            email_verified: new_user_details.email_verified,
-                            sub: new_user_details.sub,
-                            success: new_user_details.success,
-                            message: new_user_details.message
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                        throw error;
-                    });
-                }
-            }
-        }
-
-
-
-        // log out
-        async function logOut(): Promise<LogOutReturnProps> {
-            const auth0 = await getAuth0Client();
-            await auth0.logout({
-                logoutParams: {
-                    returnTo: window.location.origin
-                }
-            });
-            return { response: 'User logged out' }
-        }
-
-
-
+        
 
         async function userDetails(): Promise<UserDetailsReturnProps> {
             const auth0 = await getAuth0Client();
@@ -274,6 +190,93 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             } else {
                 throw new Error(`{ success: false, message: "Please create a Othent account" }`)
             }
+        }
+
+
+
+
+
+
+
+        // log in
+        async function logIn(params: LogInProps = {}): Promise<LogInReturnProps> {
+            params.testNet ??= false
+            const auth0 = await getAuth0Client();
+            const isAuthenticated = await auth0.isAuthenticated();
+
+            const baseOptions = {
+                authorizationParams: {
+                    transaction_input: JSON.stringify({
+                        othentFunction: "idToken",
+                        testNet: params.testNet
+                    }),
+                    redirect_uri: window.location.origin
+                }
+            };
+
+            function isDecodedJWT(obj: any): obj is DecodedJWT {
+                return obj && typeof obj.contract_id === 'string';
+            }
+
+            const loginAndGetDecodedJWT = async (options: any): Promise<{ encoded: string, decoded: DecodedJWT }> => {
+                await auth0.loginWithPopup(options);
+                const authParams = { transaction_input: JSON.stringify({ othentFunction: "idToken" }) };
+                const accessToken = await getTokenSilently(auth0, authParams);
+                const jwtObj = jwt_decode(accessToken.id_token) as DecodedJWT;
+
+                if (isDecodedJWT(jwtObj)) {
+                    return { encoded: accessToken.id_token, decoded: jwtObj };
+                } else {
+                    throw new Error('Invalid JWT structure received.');
+                }
+            };
+
+            const processDecodedJWT = async (encoded_JWT: string, decoded_JWT: DecodedJWT, isTestNet?: boolean): Promise<LogInReturnProps> => {
+                if (isTestNet ? decoded_JWT.test_net_contract_id : decoded_JWT.contract_id) {
+                    const fieldsToDelete = ['nonce', 'sid', 'aud', 'iss', 'iat', 'exp', 'updated_at'];
+                    fieldsToDelete.forEach(field => delete decoded_JWT[field as keyof DecodedJWT]);
+                    return decoded_JWT;
+                }
+                return await createUserOnServer(encoded_JWT, isTestNet ? 'testNet' : ''); // send encoded JWT
+            };
+
+            const createUserOnServer = async (encoded_JWT: string, network: string = '') => {
+                const response = await axios({
+                    method: 'POST',
+                    url: 'https://server.othent.io/create-user',
+                    data: { JWT: encoded_JWT, API_ID, network } 
+                });
+                return response.data;
+            };
+
+            if (isAuthenticated) {
+                const { encoded, decoded } = await loginAndGetDecodedJWT(baseOptions);
+                return processDecodedJWT(encoded, decoded, params.testNet);
+            } else {
+                try {
+                    const { encoded, decoded } = await loginAndGetDecodedJWT(baseOptions);
+                    return processDecodedJWT(encoded, decoded, params.testNet);
+                } catch (error) {
+                    throw new Error('Your browser is blocking us! Please turn off your shields or allow cross site cookies! :)');
+                }
+            }
+        }
+
+        
+        
+
+
+
+
+        // log out
+        async function logOut(): Promise<LogOutReturnProps> {
+            const auth0 = await getAuth0Client();
+            await auth0.logout({
+                logoutParams: {
+                    returnTo: window.location.origin
+                }
+            });
+            return { response: 'User logged out' }
         }
 
 
@@ -313,7 +316,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     toContractId: params.data.toContractId,
                     toContractFunction: params.data.toContractFunction,
                     txnData: params.data.txnData
-                }
+                },
+                testNet: params.testNet
             }
             const auth0 = await getAuth0Client();
             const authParams = { transaction_input: JSON.stringify({ 
