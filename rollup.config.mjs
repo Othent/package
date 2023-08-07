@@ -10,7 +10,8 @@ const external = [
     "jwk-to-pem",
     "permawebjs/wallet",
     "jsrsasign",
-    "crypto-js"
+    "crypto-js",
+    "nsfwjs"
 ]
 
 const plugins = [
