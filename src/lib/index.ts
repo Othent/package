@@ -310,19 +310,20 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         // sign transaction warp
         async function signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps> {
             params.tags ??= []
+            params.testNet ??= false
             const warpData = {
                 function: params.othentFunction,
                 data: {
                     toContractId: params.data.toContractId,
                     toContractFunction: params.data.toContractFunction,
                     txnData: params.data.txnData
-                },
-                testNet: params.testNet
+                }
             }
             const auth0 = await getAuth0Client();
             const authParams = { transaction_input: JSON.stringify({ 
                 othentFunction: params.othentFunction,
                 warpData: warpData,
+                testNet: params.testNet
             }) }
             const accessToken = await getTokenSilently(auth0, authParams)
             const JWT = accessToken.id_token
@@ -330,7 +331,10 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             if (!decoded_JWT.contract_id) {
                 throw new Error(`{success: false, message:"Please create a Othent account"}`)
             }
-            return { JWT: accessToken.id_token, tags: params.tags };
+            if (params.testNet === true && !decoded_JWT.test_net_contract_id) {
+                throw new Error(`{success: false, message:"Please create a Othent test net account"}`)
+            }
+            return { JWT: accessToken.id_token, tags: params.tags, testNet: params.testNet };
 
         }
 
@@ -341,10 +345,16 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         async function sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps> {
             const JWT = params.JWT
             const tags = params.tags
+            let networkType
+            if (params.testNet === true) {
+                networkType = 'testNet'
+            } else {
+                networkType = 'mainNet'
+            }
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/send-transaction',
-                data: { JWT, tags, API_ID }
+                data: { JWT, tags, API_ID, network: networkType }
             })
             .then(response => {
                 return response.data;

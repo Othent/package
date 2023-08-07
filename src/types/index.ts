@@ -176,6 +176,7 @@ export interface SignTransactionWarpProps {
     testNet?: boolean
 }
 export interface SignTransactionWarpReturnProps {
+    testNet: boolean,
     JWT: string, 
     tags?: {
         name: string;
@@ -184,6 +185,7 @@ export interface SignTransactionWarpReturnProps {
 }
 // send transaction - Warp
 export interface SendTransactionWarpProps {
+    testNet: boolean,
     JWT: string,
     tags?: {
         name: string;
