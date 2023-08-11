@@ -713,7 +713,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     contractSrc: params.contractSrc, 
                     contractState: params.state, 
                     JWT: JWT, 
-                    tags: params.tags ,
+                    tags: params.tags,
                     network: networkType
                 }
             })
