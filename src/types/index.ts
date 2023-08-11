@@ -312,7 +312,8 @@ export interface JWKBackupTxnReturnProps {
 
 // Read custom contract
 export interface readCustomContractProps {
-    contract_id: string
+    contract_id: string,
+    testNet?: boolean
 }
 export interface readCustomContractReturnProps {
     state: object, 

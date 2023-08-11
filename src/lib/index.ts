@@ -565,10 +565,17 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         // Read custom contract
         async function readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps> {
+            params.testNet ??= false
+            let networkType
+            if (params.testNet === true) {
+                networkType = 'testNet'
+            } else {
+                networkType = 'mainNet'
+            }
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/read-custom-contract',
-                data: { contract_id: params.contract_id }
+                data: { contract_id: params.contract_id, network: networkType }
             })
             .then(response => {
                 return response.data;
