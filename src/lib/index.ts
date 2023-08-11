@@ -691,6 +691,13 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
         // Deploy a Warp contract
         async function deployWarpContract(params: DeployWarpContractProps): Promise<DeployWarpContractReturnProps> {
             params.tags ??= []
+            params.testNet ??= false
+            let networkType
+            if (params.testNet === true) {
+                networkType = 'testNet'
+            } else {
+                networkType = 'mainNet'
+            }
             const file_hash = await sha256(params.contractSrc);
             const auth0 = await getAuth0Client();
             const authParams = { transaction_input: JSON.stringify({ 
@@ -706,7 +713,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                     contractSrc: params.contractSrc, 
                     contractState: params.state, 
                     JWT: JWT, 
-                    tags: params.tags 
+                    tags: params.tags,
+                    network: networkType
                 }
             })
             .then(response => {

@@ -378,7 +378,8 @@ export interface DecryptDataReturnProps {
 export interface DeployWarpContractProps {
     contractSrc: string, 
     state: object, 
-    tags?: { name: string, value: string }[] 
+    tags?: { name: string, value: string }[],
+    testNet?: boolean
 }
 export interface DeployWarpContractReturnProps {
     contractTxId: string;
