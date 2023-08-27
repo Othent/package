@@ -595,6 +595,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
         // View custom contract
         async function viewCustomContract(params: viewCustomContractProps): Promise<viewCustomContractReturnProps> {
+            params.tags ??= []
             params.testNet ??= false
             let networkType
             if (params.testNet === true) {
