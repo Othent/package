@@ -330,7 +330,7 @@ export interface readCustomContractReturnProps {
 // View custom contract
 export interface viewCustomContractProps {
     function: string,
-    tags: object,
+    tags: { name: string, value: string }[],
     contract_id: string,
     testNet?: boolean
 }
