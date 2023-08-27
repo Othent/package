@@ -23,6 +23,8 @@ export interface useOthentReturnProps {
     readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
     verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps>,
     verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps>,
+    deployWarpContract(params: DeployWarpContractProps): Promise<DeployWarpContractReturnProps>,
+    deployWarpContractFromTx(params: DeployWarpContractFromTxProps): Promise<DeployWarpContractFromTxReturnProps> 
 }
 
 
@@ -375,7 +377,7 @@ export interface DecryptDataReturnProps {
 
 
 
-// Verify bundlr data
+// Deploy warp contract
 export interface DeployWarpContractProps {
     contractSrc: string, 
     state: object, 
@@ -383,6 +385,20 @@ export interface DeployWarpContractProps {
     testNet?: boolean
 }
 export interface DeployWarpContractReturnProps {
+    contractTxId: string;
+    srcTxId?: string;
+}
+
+
+
+// Deploy warp contract from tx
+export interface DeployWarpContractFromTxProps {
+    srcTxId: string, 
+    state: object, 
+    tags?: { name: string, value: string }[],
+    testNet?: boolean
+}
+export interface DeployWarpContractFromTxReturnProps {
     contractTxId: string;
     srcTxId?: string;
 }
