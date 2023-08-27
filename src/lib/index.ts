@@ -750,7 +750,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             const auth0 = await getAuth0Client();
             const authParams = { transaction_input: JSON.stringify({ 
                 othentFunction: 'deployWarpContractFromTx',
-                deployWarpContractFromTx: params.srcTxId,
+                srcTxId: params.srcTxId,
 
             }) }
             const accessToken = await getTokenSilently(auth0, authParams)
