@@ -126,7 +126,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
                 dataBuffer = Buffer.from(data, 'utf8');
             } else if (Buffer.isBuffer(data)) {
                 dataBuffer = data;
-            } else if (data instanceof ArrayBuffer || data instanceof SharedArrayBuffer) {
+            } else if (data instanceof ArrayBuffer || (typeof SharedArrayBuffer !== 'undefined' && data instanceof SharedArrayBuffer)) {
                 dataBuffer = Buffer.from(data);
             } else if (data instanceof Uint8Array) {
                 dataBuffer = Buffer.from(data.buffer);
