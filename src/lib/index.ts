@@ -605,7 +605,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/view-custom-contract-state',
-                data: { contract_id: params.contract_id, func: params.function, data: params.data, network: networkType, }
+                data: { contract_id: params.contract_id, func: params.function, data: params.tags, network: networkType, }
             })
             .then(response => {
                 return response.data;
