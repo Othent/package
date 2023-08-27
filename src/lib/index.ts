@@ -49,6 +49,8 @@ import {
     DecryptDataReturnProps,
     DeployWarpContractProps,
     DeployWarpContractReturnProps,
+    DeployWarpContractFromTxProps,
+    DeployWarpContractFromTxReturnProps
   } from "../types/index.js";
 
 
@@ -735,6 +737,46 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
 
+        // Deploy a Warp contract from transaction
+        async function deployWarpContractFromTx(params: DeployWarpContractFromTxProps): Promise<DeployWarpContractFromTxReturnProps> {
+            params.tags ??= []
+            params.testNet ??= false
+            let networkType
+            if (params.testNet === true) {
+                networkType = 'testNet'
+            } else {
+                networkType = 'mainNet'
+            }
+            const auth0 = await getAuth0Client();
+            const authParams = { transaction_input: JSON.stringify({ 
+                othentFunction: 'deployWarpContractFromTx',
+                deployWarpContractFromTx: params.srcTxId,
+
+            }) }
+            const accessToken = await getTokenSilently(auth0, authParams)
+            const JWT = accessToken.id_token
+            return await axios({
+                method: 'POST',
+                url: 'https://server.othent.io/deploy-warp-contract-from-tx',
+                data: { 
+                    srcTxId: params.srcTxId, 
+                    contractState: params.state, 
+                    JWT: JWT, 
+                    tags: params.tags,
+                    network: networkType
+                }
+            })
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                throw error;
+            });
+        }
+
+
+
 
 
 
@@ -759,7 +801,8 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             verifyBundlrData,
             encryptData,
             decryptData,
-            deployWarpContract
+            deployWarpContract,
+            deployWarpContractFromTx
         };
     })
     .catch((error) => {
