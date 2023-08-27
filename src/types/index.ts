@@ -12,6 +12,7 @@ export interface useOthentReturnProps {
     logOut(): Promise<LogOutReturnProps>,
     userDetails(): Promise<UserDetailsReturnProps>,
     readContract(): Promise<ReadContractReturnProps>,
+    viewCustomContract(params: viewCustomContractProps): Promise<viewCustomContractReturnProps>,
     signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps>,
     sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps>,
     signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps>,
@@ -321,6 +322,21 @@ export interface readCustomContractReturnProps {
     state: object, 
     errors: object, 
     validity: object
+}
+
+
+
+
+// View custom contract
+export interface viewCustomContractProps {
+    function: string,
+    data: object,
+    contract_id: string,
+    testNet?: boolean
+}
+export interface viewCustomContractReturnProps {
+    success: boolean, 
+    result: object
 }
 
 

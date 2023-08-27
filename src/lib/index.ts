@@ -50,7 +50,10 @@ import {
     DeployWarpContractProps,
     DeployWarpContractReturnProps,
     DeployWarpContractFromTxProps,
-    DeployWarpContractFromTxReturnProps
+    DeployWarpContractFromTxReturnProps,
+    viewCustomContractProps,
+    viewCustomContractReturnProps
+
   } from "../types/index.js";
 
 
@@ -590,6 +593,31 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
 
+        // View custom contract
+        async function viewCustomContract(params: viewCustomContractProps): Promise<viewCustomContractReturnProps> {
+            params.testNet ??= false
+            let networkType
+            if (params.testNet === true) {
+                networkType = 'testNet'
+            } else {
+                networkType = 'mainNet'
+            }
+            return await axios({
+                method: 'POST',
+                url: 'https://server.othent.io/view-custom-contract-state',
+                data: { contract_id: params.contract_id, func: params.function, data: params.data, network: networkType, }
+            })
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                throw error;
+            });
+        }
+
+
+
 
 
 
@@ -788,6 +816,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             logOut,
             userDetails,
             readContract,
+            viewCustomContract,
             signTransactionWarp,
             sendTransactionWarp,
             signTransactionArweave,
