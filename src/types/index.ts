@@ -12,6 +12,7 @@ export interface useOthentReturnProps {
     logOut(): Promise<LogOutReturnProps>,
     userDetails(): Promise<UserDetailsReturnProps>,
     readContract(): Promise<ReadContractReturnProps>,
+    viewCustomContract(params: viewCustomContractProps): Promise<viewCustomContractReturnProps>,
     signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps>,
     sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps>,
     signTransactionArweave(params: SignTransactionArweaveProps): Promise<SignTransactionArweaveReturnProps>,
@@ -23,6 +24,8 @@ export interface useOthentReturnProps {
     readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
     verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps>,
     verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps>,
+    deployWarpContract(params: DeployWarpContractProps): Promise<DeployWarpContractReturnProps>,
+    deployWarpContractFromTx(params: DeployWarpContractFromTxProps): Promise<DeployWarpContractFromTxReturnProps> 
 }
 
 
@@ -324,6 +327,21 @@ export interface readCustomContractReturnProps {
 
 
 
+// View custom contract
+export interface viewCustomContractProps {
+    function: string,
+    tags: { name: string, value: string }[],
+    contract_id: string,
+    testNet?: boolean
+}
+export interface viewCustomContractReturnProps {
+    success: boolean, 
+    result: object
+}
+
+
+
+
 // Verify arweave data
 export interface verifyArweaveDataProps {
     transactionId: string
@@ -375,7 +393,7 @@ export interface DecryptDataReturnProps {
 
 
 
-// Verify bundlr data
+// Deploy warp contract
 export interface DeployWarpContractProps {
     contractSrc: string, 
     state: object, 
@@ -383,6 +401,20 @@ export interface DeployWarpContractProps {
     testNet?: boolean
 }
 export interface DeployWarpContractReturnProps {
+    contractTxId: string;
+    srcTxId?: string;
+}
+
+
+
+// Deploy warp contract from tx
+export interface DeployWarpContractFromTxProps {
+    srcTxId: string, 
+    state: object, 
+    tags?: { name: string, value: string }[],
+    testNet?: boolean
+}
+export interface DeployWarpContractFromTxReturnProps {
     contractTxId: string;
     srcTxId?: string;
 }
