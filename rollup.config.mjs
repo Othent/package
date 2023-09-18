@@ -11,28 +11,35 @@ const external = [
     "permawebjs/wallet",
     "jsrsasign",
     "crypto-js"
-]
+];
 
 const plugins = [
-        commonjs(),
-        typescript({
-            declaration: false,
-        }),
-        terser(),
-]
+    commonjs(),
+    typescript({
+        declaration: false,
+    }),
+    terser(),
+];
+
+const inputs = {
+    index: "src/index.ts",
+    node: "src/lib/node.ts"
+};
 
 export default {
-    input: "src/index.ts",
+    input: inputs,
     output: [
         {
-            file: "dist/index.js",
+            dir: "dist", 
             format: "cjs",
             sourcemap: true,
+            entryFileNames: "[name].js" 
         },
         {
-            file: "dist/index.mjs",
+            dir: "dist",
             format: "esm",
             sourcemap: true,
+            entryFileNames: "[name].mjs"
         },
     ],
     plugins,

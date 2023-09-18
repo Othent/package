@@ -20,7 +20,6 @@ export interface useOthentReturnProps {
     signTransactionBundlr(params: SignTransactionBundlrProps): Promise<SignTransactionBundlrReturnProps>,
     sendTransactionBundlr(params: SendTransactionBundlrProps): Promise<SendTransactionBundlrReturnProps>,
     initializeJWK(params: InitializeJWKProps): Promise<InitializeJWKReturnProps>,
-    JWKBackupTxn(params: JWKBackupTxnProps): Promise<JWKBackupTxnReturnProps>,
     readCustomContract(params: readCustomContractProps): Promise<readCustomContractReturnProps>,
     verifyArweaveData(params: verifyArweaveDataProps): Promise<verifyArweaveDataReturnProps>,
     verifyBundlrData(params: verifyBundlrDataProps): Promise<verifyBundlrDataReturnProps>,
@@ -276,43 +275,6 @@ export interface SignTransactionBundlrProps {
 
 
 
-// backup keyfile
-export interface InitializeJWKProps {
-    privateKey: object
-}
-export interface InitializeJWKReturnProps {
-    success: boolean,
-    transactionId: string,
-}
-
-
-
-// JWK transaction
-export interface JWKBackupTxnProps {
-    privateKey: {
-        kty: "RSA";
-        e: string;
-        n: string;
-        d?: string | undefined;
-        p?: string | undefined;
-        q?: string | undefined;
-        dp?: string | undefined;
-        dq?: string | undefined;
-        qi?: string | undefined;
-    },
-    sub: string,
-    contract_id: string,
-    tags?: { name: string, value: string }[],
-    data: object,
-    othentFunction: string
-}
-export interface JWKBackupTxnReturnProps {
-    validity: boolean,
-    transactionId: string,
-}
-
-
-
 // Read custom contract
 export interface readCustomContractProps {
     contract_id: string,
@@ -419,6 +381,16 @@ export interface DeployWarpContractFromTxReturnProps {
     srcTxId?: string;
 }
 
+
+
+// Backup keyfile
+export interface InitializeJWKProps {
+    JWK_public_key_PEM: string
+}
+export interface InitializeJWKReturnProps {
+    success: boolean,
+    transactionId: string,
+}
 
 
 
