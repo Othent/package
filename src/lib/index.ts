@@ -534,7 +534,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/read-custom-contract',
-                data: { contract_id: params.contract_id, network: networkType }
+                data: { contract_id: params.contract_id, network: networkType, customDREURL: params.customDREURL }
             })
             .then(response => {
                 return response.data;
@@ -560,7 +560,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/view-custom-contract-state',
-                data: { contract_id: params.contract_id, func: params.function, data: params.tags, network: networkType, }
+                data: { contract_id: params.contract_id, func: params.function, data: params.tags, network: networkType, customDREURL: params.customDREURL }
             })
             .then(response => {
                 return response.data;

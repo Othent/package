@@ -281,7 +281,8 @@ export interface SignTransactionBundlrProps {
 // Read custom contract
 export interface readCustomContractProps {
     contract_id: string,
-    testNet?: boolean
+    testNet?: boolean,
+    customDREURL?: string;
 }
 export interface readCustomContractReturnProps {
     state: object, 
@@ -297,7 +298,8 @@ export interface viewCustomContractProps {
     function: string,
     tags: { name: string, value: string }[],
     contract_id: string,
-    testNet?: boolean
+    testNet?: boolean,
+    customDREURL?: string;
 }
 export interface viewCustomContractReturnProps {
     success: boolean, 
