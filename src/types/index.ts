@@ -11,7 +11,7 @@ export interface useOthentReturnProps {
     logIn(params: LogInProps): Promise<LogInReturnProps>,
     logOut(): Promise<LogOutReturnProps>,
     userDetails(): Promise<UserDetailsReturnProps>,
-    readContract(): Promise<ReadContractReturnProps>,
+    readContract(params: ReadContractProps): Promise<ReadContractReturnProps>,
     viewCustomContract(params: viewCustomContractProps): Promise<viewCustomContractReturnProps>,
     signTransactionWarp(params: SignTransactionWarpProps): Promise<SignTransactionWarpReturnProps>,
     sendTransactionWarp(params: SendTransactionWarpProps): Promise<SendTransactionWarpReturnProps>,
@@ -154,6 +154,9 @@ export interface UserDetailsReturnProps {
 
 
 // read contract
+export interface ReadContractProps {
+    customDREURL?: string;
+}
 export interface ReadContractReturnProps {
     state: object, 
     errors: object, 
@@ -278,7 +281,8 @@ export interface SignTransactionBundlrProps {
 // Read custom contract
 export interface readCustomContractProps {
     contract_id: string,
-    testNet?: boolean
+    testNet?: boolean,
+    customDREURL?: string;
 }
 export interface readCustomContractReturnProps {
     state: object, 
@@ -294,7 +298,8 @@ export interface viewCustomContractProps {
     function: string,
     tags: { name: string, value: string }[],
     contract_id: string,
-    testNet?: boolean
+    testNet?: boolean,
+    customDREURL?: string;
 }
 export interface viewCustomContractReturnProps {
     success: boolean, 

@@ -12,6 +12,7 @@ import {
     LogInReturnProps,
     LogOutReturnProps,
     PingReturnProps,
+    ReadContractProps,
     ReadContractReturnProps,
     SendTransactionArweaveProps,
     SendTransactionArweaveReturnProps,
@@ -284,7 +285,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
 
 
         // read contract
-        async function readContract(): Promise<ReadContractReturnProps> {
+        async function readContract(params: ReadContractProps): Promise<ReadContractReturnProps> {
             const auth0 = await getAuth0Client();
             const authParams = { transaction_input: JSON.stringify({ othentFunction: "idToken" }) }
             const accessToken = await getTokenSilently(auth0, authParams)
@@ -292,7 +293,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/read-contract',
-                data: { JWT }
+                data: { JWT, customDREURL: params.customDREURL }
             })
             .then(response => {
                 return response.data;
@@ -533,7 +534,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/read-custom-contract',
-                data: { contract_id: params.contract_id, network: networkType }
+                data: { contract_id: params.contract_id, network: networkType, customDREURL: params.customDREURL }
             })
             .then(response => {
                 return response.data;
@@ -559,7 +560,7 @@ export async function Othent(params: useOthentProps): Promise<useOthentReturnPro
             return await axios({
                 method: 'POST',
                 url: 'https://server.othent.io/view-custom-contract-state',
-                data: { contract_id: params.contract_id, func: params.function, data: params.tags, network: networkType, }
+                data: { contract_id: params.contract_id, func: params.function, data: params.tags, network: networkType, customDREURL: params.customDREURL }
             })
             .then(response => {
                 return response.data;
