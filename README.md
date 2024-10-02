@@ -1,3 +1,13 @@
+> [!WARNING]
+> 
+> **`othent` has been deprecated.**
+>
+> Please, use the [`@othent/kms`](https://github.com/Othent/KeyManagementService) SDK to integrate Othent in your projects.
+>
+> You can read more about it at [docs.othent.io](https://docs.othent.io) and see it in action at [playground.othent.io](https://playground.othent.io/).
+
+----
+
 # Othent.io Library
 The Othent Library is a collection of functions that enable interaction with the Othent walletless protocol. These functions are designed to make it seamless for developers to integrate Othent into their applications.
 
